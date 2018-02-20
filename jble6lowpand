@@ -49,8 +49,6 @@ LOG_ERR="$FILE_PATH/err/$NAME.err"
 jsvc_exec()
 {   
     cd $FILE_PATH
-    killall bluetoothd
-    sleep 1
     hciconfig hci0 reset
     sleep 1
     $EXEC -home $JAVA_HOME -cp $CLASS_PATH -Djava.library.path=$LOADLIB -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
