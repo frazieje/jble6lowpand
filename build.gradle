@@ -34,10 +34,6 @@ dependencies {
     testRuntime("org.junit.vintage:junit-vintage-engine:4.12.2")
 }
 
-jar {
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-}
-
 task copyToLib(type: Copy) {
     into "$buildDir/output/libs"
     from configurations.runtime
