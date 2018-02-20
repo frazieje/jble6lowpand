@@ -1,0 +1,52 @@
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+sourceCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'commons-daemon', name: 'commons-daemon', version: '1.0.15'
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    testCompile("junit:junit:4.12")
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
+
+    testRuntime("org.junit.platform:junit-platform-launcher:1.0.2")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.2")
+    testRuntime("org.junit.vintage:junit-vintage-engine:4.12.2")
+}
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+}
+
+task copyToLib(type: Copy) {
+    into "$buildDir/output/libs"
+    from configurations.runtime
+}
+
+task generateJniHeaders(type:Exec) {
+    def classpath = sourceSets.main.output.classesDir
+    commandLine "javah", "-d", "jni/headers", "-classpath", classpath, "com.spoohapps.jble6lowpand.NativeBle6LowpanIpspService"
+    dependsOn classes
+}
+
+build.dependsOn(copyToLib)
