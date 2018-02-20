@@ -137,7 +137,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
                         if (kind == StandardWatchEventKinds.OVERFLOW) {
                             Thread.yield();
                             continue;
-                        } else if (kind == java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
+                        } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY
                                 && filename.toString().equals(filePath.getFileName().toString())) {
                             fileChanged.run();
                         }
