@@ -92,17 +92,23 @@ public class ScanningDaemon implements Daemon, ScanningDaemonController {
 	@Override
 	public void stop() throws InterruptedException {
         logger.info("Stopping...");
-        knownDevices.stopWatcher();
         scanningExecutorService.shutdown();
+        try {
+            if (!scanningExecutorService.awaitTermination(config.getScanDurationMs()*2, TimeUnit.MILLISECONDS)) {
+                logger.info("Force stopping...");
+                scanningExecutorService.shutdownNow();
+                if (!scanningExecutorService.awaitTermination(5, TimeUnit.SECONDS))
+                    logger.error("Did not terminate, kill process manually.");
+            } else {
+                logger.info("Exiting normally...");
+            }
+        } catch (InterruptedException ie) {}
+
         logger.info("Stopped");
 	}
 
 	@Override
 	public void destroy() {
-        logger.info("Force stopping");
-		scanningExecutorService.shutdownNow();
-        knownDevices.stopWatcher();
-        logger.info("Stopped");
 	}
 
 	@Override
