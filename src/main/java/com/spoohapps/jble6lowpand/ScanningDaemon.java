@@ -127,7 +127,7 @@ public class ScanningDaemon implements Daemon, ScanningDaemonController {
                     config.getConnectTimeoutMs(),
                     TimeUnit.MILLISECONDS);
             try {
-                Registry registry = LocateRegistry.getRegistry();
+                Registry registry = LocateRegistry.createRegistry(1099);
                 registry.bind("jble6lowpand", UnicastRemoteObject.exportObject(this, 0));
                 logger.debug("RMI Server ready");
             } catch (Exception e) {
