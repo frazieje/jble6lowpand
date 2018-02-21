@@ -30,7 +30,7 @@ public class WhenCascadingConfigs {
                 "-d", "" + expectedScanDurationMs,
                 "-t", "" + expectedScanTimeoutMs,
                 "-c", "" + expectedConnectTimeoutMs,
-                "w", expectedWhitelistPath
+                "-w", expectedWhitelistPath
         };
 
         config = Config.fromArgs(args).apply(Config.fromArgs(args2));
