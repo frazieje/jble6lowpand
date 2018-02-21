@@ -1,5 +1,6 @@
-package com.spoohapps.jble6lowpand;
+package com.spoohapps.jble6lowpand.tasks;
 
+import com.spoohapps.jble6lowpand.Ble6LowpanIpspService;
 import com.spoohapps.jble6lowpand.model.BTAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

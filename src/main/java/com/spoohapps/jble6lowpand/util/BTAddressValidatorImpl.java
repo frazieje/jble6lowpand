@@ -1,6 +1,4 @@
-package com.spoohapps.jble6lowpand.model;
-
-import com.spoohapps.jble6lowpand.model.BTAddressValidator;
+package com.spoohapps.jble6lowpand.util;
 
 import java.util.regex.Pattern;
 

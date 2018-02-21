@@ -1,4 +1,4 @@
-package com.spoohapps.jble6lowpand;
+package com.spoohapps.jble6lowpand.model;
 
 import com.spoohapps.jble6lowpand.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;

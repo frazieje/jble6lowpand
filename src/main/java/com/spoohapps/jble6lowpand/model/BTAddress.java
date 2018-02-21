@@ -1,6 +1,9 @@
 package com.spoohapps.jble6lowpand.model;
 
 
+import com.spoohapps.jble6lowpand.util.BTAddressValidator;
+import com.spoohapps.jble6lowpand.util.BTAddressValidatorImpl;
+
 import java.util.Arrays;
 import java.util.Objects;
 
