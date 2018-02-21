@@ -4,36 +4,28 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenCascadingConfigs {
+public class WhenLoadingConfigFromMixedArgsTests {
 
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;
     private int expectedScanDurationMs = 3000;
     private String expectedWhitelistPath = "/path";
 
-
     private DaemonConfig config;
 
     @BeforeAll
     public void context() {
         String[] args = new String[] {
-                "-d", "1",
-                "-t", "2",
-                "-c", "3",
-                "-w", "4"
-        };
-
-        String[] args2 = new String[] {
-                "-d", "" + expectedScanDurationMs,
+                "-scanDuration", "" + expectedScanDurationMs,
                 "-t", "" + expectedScanTimeoutMs,
-                "-c", "" + expectedConnectTimeoutMs,
+                "-connectTimeout", "" + expectedConnectTimeoutMs,
                 "-w", expectedWhitelistPath
         };
 
-        config = Config.fromArgs(args).apply(Config.fromArgs(args2));
+        config = Config.fromArgs(args);
     }
 
     @Test

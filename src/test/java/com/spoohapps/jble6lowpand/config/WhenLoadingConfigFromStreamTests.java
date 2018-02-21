@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenLoadingConfigFromStream {
+public class WhenLoadingConfigFromStreamTests {
 
     private DaemonConfig config;
 

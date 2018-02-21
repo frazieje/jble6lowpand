@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenLoadingConfigFromShortArgs {
+public class WhenLoadingConfigFromShortArgsTests {
 
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;

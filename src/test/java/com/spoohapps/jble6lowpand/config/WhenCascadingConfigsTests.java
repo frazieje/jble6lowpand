@@ -4,28 +4,36 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenLoadingConfigFromVerboseArgs {
+public class WhenCascadingConfigsTests {
 
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;
     private int expectedScanDurationMs = 3000;
     private String expectedWhitelistPath = "/path";
 
+
     private DaemonConfig config;
 
     @BeforeAll
     public void context() {
         String[] args = new String[] {
-                "-scanDuration", "" + expectedScanDurationMs,
-                "-scanTimeout", "" + expectedScanTimeoutMs,
-                "-connectTimeout", "" + expectedConnectTimeoutMs,
-                "-whitelistPath", expectedWhitelistPath
+                "-d", "1",
+                "-t", "2",
+                "-c", "3",
+                "-w", "4"
         };
 
-        config = Config.fromArgs(args);
+        String[] args2 = new String[] {
+                "-d", "" + expectedScanDurationMs,
+                "-t", "" + expectedScanTimeoutMs,
+                "-c", "" + expectedConnectTimeoutMs,
+                "-w", expectedWhitelistPath
+        };
+
+        config = Config.fromArgs(args).apply(Config.fromArgs(args2));
     }
 
     @Test
@@ -47,4 +55,5 @@ public class WhenLoadingConfigFromVerboseArgs {
     public void ShouldSetWhitelistPath() {
         assertEquals(expectedWhitelistPath, config.getWhitelistPath());
     }
+
 }

@@ -3,7 +3,7 @@ package com.spoohapps.jble6lowpand.config;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class WhenLoadingConfigFromMalformedArgs {
+public class WhenLoadingConfigFromMalformedArgsTests {
 
     @Test
     public void ShouldIgnoreUnintelligibleValues() {

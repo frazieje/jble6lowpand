@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenLoadingConfigFromMixedArgs {
+public class WhenLoadingConfigFromVerboseArgsTests {
 
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;
@@ -20,9 +20,9 @@ public class WhenLoadingConfigFromMixedArgs {
     public void context() {
         String[] args = new String[] {
                 "-scanDuration", "" + expectedScanDurationMs,
-                "-t", "" + expectedScanTimeoutMs,
+                "-scanTimeout", "" + expectedScanTimeoutMs,
                 "-connectTimeout", "" + expectedConnectTimeoutMs,
-                "-w", expectedWhitelistPath
+                "-whitelistPath", expectedWhitelistPath
         };
 
         config = Config.fromArgs(args);
@@ -47,5 +47,4 @@ public class WhenLoadingConfigFromMixedArgs {
     public void ShouldSetWhitelistPath() {
         assertEquals(expectedWhitelistPath, config.getWhitelistPath());
     }
-
 }
