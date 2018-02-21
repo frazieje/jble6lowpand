@@ -16,7 +16,7 @@ public class DaemonController {
         String host = (args.length < 1) ? null : args[0];
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ScanningDaemonController stub = (ScanningDaemonController) registry.lookup("ScanningDaemonController");
+            ScanningDaemonController stub = (ScanningDaemonController) registry.lookup("jble6lowpand");
             Set<String> devices = stub.getKnownDevices();
             logger.info(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
         } catch (Exception e) {
