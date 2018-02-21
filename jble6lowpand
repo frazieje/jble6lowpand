@@ -51,13 +51,13 @@ jsvc_exec()
     cd $FILE_PATH
     hciconfig hci0 reset
     sleep 1
-    $EXEC -home $JAVA_HOME -cp $CLASS_PATH -Djava.library.path=$LOADLIB -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
+    $EXEC -home $JAVA_HOME -cp $CLASS_PATH -Djava.library.path=$LOADLIB -Djava.rmi.server.codebase=file:$FILE_PATH/ -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
 }
 
 case "$1" in
     start)  
         echo "Starting the $DESC..."        
-        
+
         # Start the service
         jsvc_exec
         
@@ -65,7 +65,7 @@ case "$1" in
     ;;
     stop)
         echo "Stopping the $DESC..."
-        
+
         # Stop the service
         jsvc_exec "-stop"       
         
