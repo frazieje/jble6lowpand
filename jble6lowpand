@@ -25,11 +25,26 @@ FILE_PATH="/usr/local/$NAME"
 # The path to the folder containing the java runtime
 JAVA_HOME="/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt"
 
+# The path to the java executable
+CLI_EXEC="$JAVA_HOME/bin/java"
+
+# The path to the jar file
+JAR_PATH="$FILE_PATH/build/libs/jble6lowpand-0.1.jar"
+
+# The paths to logging frameworks to be linked via slf4j
+LOG_CLASS_PATH="$FILE_PATH/build/output/libs/logback-classic.1.2.3.jar:$FILE_PATH/build/output/libs/logback-core-1.2.3.jar"
+
+# Cli classpath
+CLI_CLASS_PATH="$JAR_PATH:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar"
+
 # Our classpath including our jar file
-CLASS_PATH="$FILE_PATH/build/libs/jble6lowpand-0.1.jar:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar:$FILE_PATH/build/output/libs/logback-classic-1.2.3.jar:$FILE_PATH/build/output/libs/logback-core-1.2.3.jar"
+CLASS_PATH="$CLI_CLASS_PATH:$LOG_CLASS_PATH"
 
 # The fully qualified name of the class to execute
 CLASS="com.spoohapps.jble6lowpand.ScanningDaemon"
+
+# The fully qualified name of the cli class
+CLI_CLASS="com.spoohapps.jble6lowpand.DaemonController"
 
 # library path for jni
 LOADLIB="$FILE_PATH/jni/libs/arm32"
@@ -51,7 +66,13 @@ jsvc_exec()
     cd $FILE_PATH
     hciconfig hci0 reset
     sleep 1
-    $EXEC -home $JAVA_HOME -cp $CLASS_PATH -Djava.library.path=$LOADLIB -Djava.rmi.server.codebase=file:$FILE_PATH/ -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
+    $EXEC -home $JAVA_HOME -cp $CLASS_PATH -Djava.library.path=$LOADLIB -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
+}
+
+cli_exec()
+{
+    cd $FILE_PATH
+    $CLI_EXEC -cp $CLI_CLASS_PATH $CLI_CLASS
 }
 
 case "$1" in
@@ -88,6 +109,12 @@ case "$1" in
             exit 1
         fi
             ;;
+    list)
+       if [ -f "$PID" ]; then
+            echo "List connected devices..."
+            cli_exec
+       fi
+    ;;
     *)
     echo "Usage: /etc/init.d/$NAME {start|stop|restart}" >&2
     exit 3
