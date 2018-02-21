@@ -26,7 +26,7 @@ FILE_PATH="/usr/local/$NAME"
 JAVA_HOME="/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt"
 
 # Our classpath including our jar file
-CLASS_PATH="$FILE_PATH/build/libs/jble6lowpand-0.1.jar:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar:logback-classic-1.2.3.jar:logback-core-1.2.3.jar"
+CLASS_PATH="$FILE_PATH/build/libs/jble6lowpand-0.1.jar:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar:$FILE_PATH/build/output/libs/logback-classic-1.2.3.jar:$FILE_PATH/build/output/libs/logback-core-1.2.3.jar"
 
 # The fully qualified name of the class to execute
 CLASS="com.spoohapps.jble6lowpand.ScanningDaemon"
