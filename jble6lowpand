@@ -31,14 +31,17 @@ CLI_EXEC="$JAVA_HOME/bin/java"
 # The path to the jar file
 JAR_PATH="$FILE_PATH/build/libs/jble6lowpand-0.1.jar"
 
-# The paths to logging frameworks to be linked via slf4j
+# The path to the logging framework to be linked for the daemon via slf4j
 LOG_CLASS_PATH="$FILE_PATH/build/output/libs/logback-classic.1.2.3.jar:$FILE_PATH/build/output/libs/logback-core-1.2.3.jar"
 
+# The path to the logging framework to be linked for the cli via slf4j
+CLI_LOG_CLASS_PATH="$FILE_PATH/build/output/libs/slf4j-simple-1.7.25.jar"
+
 # Cli classpath
-CLI_CLASS_PATH="$JAR_PATH:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar"
+CLI_CLASS_PATH="$JAR_PATH:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar:$CLI_LOG_CLASS_PATH"
 
 # Our classpath including our jar file
-CLASS_PATH="$CLI_CLASS_PATH:$LOG_CLASS_PATH"
+CLASS_PATH="$JAR_PATH:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FILE_PATH/build/output/libs/slf4j-api-1.7.25.jar:$LOG_CLASS_PATH"
 
 # The fully qualified name of the class to execute
 CLASS="com.spoohapps.jble6lowpand.ScanningDaemon"
@@ -113,6 +116,8 @@ case "$1" in
        if [ -f "$PID" ]; then
             echo "List connected devices..."
             cli_exec
+       else
+            echo "jble6lowpand not running"
        fi
     ;;
     *)
