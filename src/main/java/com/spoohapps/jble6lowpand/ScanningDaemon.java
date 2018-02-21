@@ -128,7 +128,7 @@ public class ScanningDaemon implements Daemon, ScanningDaemonController {
             try {
                 Registry registry = LocateRegistry.getRegistry();
                 registry.bind("jble6lowpand", UnicastRemoteObject.exportObject(this, 0));
-                logger.info("RMI Server ready");
+                logger.debug("RMI Server ready");
             } catch (Exception e) {
                 logger.error("RMI Server exception: " + e.toString());
             }

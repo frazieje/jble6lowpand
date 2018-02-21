@@ -27,44 +27,44 @@ public class BleIpspConnector implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Connecting to ipsp devices");
+        logger.trace("Connecting to ipsp devices");
         for (BTAddress address : availableDevices) {
             if (knownDevices.contains(address)) {
                 if (!connectedDevices.contains(address)) {
                     String message = "connecting to " + address.toString() + " ...";
                     try {
                         if (ble6LowpanIpspService.connectIpspDevice(address.toString())) {
-                            logger.info("{} success", message);
+                            logger.trace("{} success", message);
                         } else {
-                            logger.info("{} failed", message);
+                            logger.trace("{} failed", message);
                         }
                     } catch (Exception e) {
-                        logger.info("{} failed", message);
+                        logger.trace("{} failed", message);
                     }
                 } else {
-                    logger.info("ignoring already connected device {}", address.toString());
+                    logger.trace("ignoring already connected device {}", address.toString());
                 }
             } else {
-                logger.info("ignoring unknown device {}", address.toString());
+                logger.trace("ignoring unknown device {}", address.toString());
             }
         }
-        logger.info("updating connected ipsp devices");
+        logger.trace("updating connected ipsp devices");
         try {
             String[] devices = ble6LowpanIpspService.getConnectedIpspDevices();
             Set<BTAddress> connectedAddresses = new HashSet<>();
             for (int i = 0; i < devices.length; i++) {
                 try {
-                    logger.info("Connected Device: {}", devices[i]);
+                    logger.trace("Connected Device: {}", devices[i]);
                     connectedAddresses.add(new BTAddress(devices[i]));
                 } catch (IllegalArgumentException iae) {
-                    logger.info("Error deserializing BT address");
+                    logger.trace("Error deserializing BT address");
                 }
             }
             connectedDevices.retainAll(connectedAddresses);
             connectedDevices.addAll(connectedAddresses);
 
         } catch (IllegalArgumentException iae) {
-            logger.info("Error deserializing BT address");
+            logger.trace("Error deserializing BT address");
         }
     }
 }

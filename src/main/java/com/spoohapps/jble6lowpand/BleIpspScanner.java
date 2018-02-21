@@ -24,24 +24,24 @@ public class BleIpspScanner implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Scanning for ipsp devices");
+        logger.trace("Scanning for ipsp devices");
         try {
             String[] devices = ble6LowpanIpspService.scanIpspDevices(scanDurationSeconds);
             Set<BTAddress> availableAddresses = new HashSet<>();
-            logger.info("{} devices found", devices.length);
+            logger.trace("{} devices found", devices.length);
             for (int i = 0; i < devices.length; i++) {
                 try {
-                    logger.info("adding device {}", devices[i]);
+                    logger.trace("adding device {}", devices[i]);
                     availableAddresses.add(new BTAddress(devices[i]));
                 } catch (IllegalArgumentException iae) {
-                    logger.info("Error deserializing BT address");
+                    logger.trace("Error deserializing BT address");
                 }
             }
             availableDevices.retainAll(availableAddresses);
             availableDevices.addAll(availableAddresses);
         } catch (Exception e) {
-            logger.info("Error in scanner");
+            logger.trace("Error in scanner");
         }
-        logger.info("Done scanning");
+        logger.trace("Done scanning");
     }
 }
