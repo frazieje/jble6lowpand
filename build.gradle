@@ -22,6 +22,7 @@ dependencies {
     compile group: 'commons-daemon', name: 'commons-daemon', version: '1.0.15'
 
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
