@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class DaemonController {
@@ -17,8 +16,7 @@ public class DaemonController {
         try {
             Registry registry = LocateRegistry.getRegistry(host);
             ScanningDaemonController stub = (ScanningDaemonController) registry.lookup("jble6lowpand");
-            Set<String> devices = stub.getKnownDevices();
-            logger.info(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
+            System.out.println(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
         } catch (Exception e) {
             logger.error("Client exception: " + e.toString());
             e.printStackTrace();
