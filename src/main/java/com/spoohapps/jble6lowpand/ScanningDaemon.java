@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-public class ScanningDaemon implements Daemon, ScanningDaemonController {
+public class ScanningDaemon implements Daemon, Ble6LowpanController {
 	
 	private KnownDeviceRepository knownDevices;
 	private Ble6LowpanIpspService ble6LowpanIpspService;
