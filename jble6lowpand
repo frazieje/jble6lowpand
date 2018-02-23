@@ -47,7 +47,7 @@ CLASS_PATH="$JAR_PATH:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FI
 CLASS="com.spoohapps.jble6lowpand.ScanningDaemon"
 
 # The fully qualified name of the cli class
-CLI_CLASS="com.spoohapps.jble6lowpand.DaemonController"
+CLI_CLASS="com.spoohapps.jble6lowpand.controller.ScanningDaemonController"
 
 # library path for jni
 LOADLIB="$FILE_PATH/jni/libs/arm32"
@@ -75,7 +75,7 @@ jsvc_exec()
 cli_exec()
 {
     cd $FILE_PATH
-    $CLI_EXEC -cp $CLI_CLASS_PATH $CLI_CLASS
+    $CLI_EXEC -cp $CLI_CLASS_PATH $CLI_CLASS $1
 }
 
 case "$1" in
@@ -115,7 +115,15 @@ case "$1" in
     list)
        if [ -f "$PID" ]; then
             echo "List connected devices..."
-            cli_exec
+            cli_exec "-list"
+       else
+            echo "jble6lowpand not running"
+       fi
+    ;;
+    known)
+       if [ -f "$PID" ]; then
+            echo "List known devices..."
+            cli_exec "-known"
        else
             echo "jble6lowpand not running"
        fi

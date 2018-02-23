@@ -34,9 +34,13 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
 
     private ScheduledExecutorService scanningExecutorService;
 
+    private Registry rmiRegistry;
+
     private DaemonConfig config;
 
     private final Logger logger = LoggerFactory.getLogger(ScanningDaemon.class);
+
+    public static final String ControllerName = "jble6lowpand";
 
     public ScanningDaemon() {}
 
@@ -105,6 +109,10 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
             }
         } catch (InterruptedException ie) {}
 
+        knownDevices.stopWatcher();
+
+        stopController();
+
         logger.info("Stopped");
 	}
 
@@ -115,6 +123,8 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
 	@Override
 	public void start() {
         try {
+            logger.info("Starting...");
+            startController();
             knownDevices.startWatcher();
             scanningExecutorService.scheduleWithFixedDelay(
                     new BleIpspScanner(ble6LowpanIpspService, config.getScanDurationMs(), availableDevices),
@@ -126,19 +136,31 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
                     config.getScanDurationMs(),
                     config.getConnectTimeoutMs(),
                     TimeUnit.MILLISECONDS);
-            try {
-                Registry registry = LocateRegistry.createRegistry(1099);
-                registry.bind("jble6lowpand", UnicastRemoteObject.exportObject(this, 0));
-                logger.debug("RMI Server ready");
-            } catch (Exception e) {
-                logger.error("RMI Server exception: " + e.toString());
-            }
             logger.info("Running...");
         } catch (Exception e) {
             logger.error(e.getMessage());
             for (StackTraceElement se : e.getStackTrace())
                 logger.error(se.toString());
             throw e;
+        }
+    }
+
+    private void startController() {
+        try {
+            rmiRegistry = LocateRegistry.createRegistry(1099);
+            rmiRegistry.bind(ControllerName, UnicastRemoteObject.exportObject(this, 0));
+            logger.info("RMI Server ready");
+        } catch (Exception e) {
+            logger.error("RMI Server exception: " + e.getMessage());
+        }
+    }
+
+    private void stopController() {
+        try {
+            rmiRegistry.unbind(ControllerName);
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (Exception ex) {
+            logger.error("RMI server exception: " + ex.getMessage());
         }
     }
 

@@ -8,16 +8,24 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.stream.Collectors;
 
+import static com.spoohapps.jble6lowpand.ScanningDaemon.ControllerName;
+
 public class ScanningDaemonController {
 
     private static final Logger logger = LoggerFactory.getLogger(ScanningDaemonController.class);
 
     public static void main(String[] args) {
-        String host = (args.length < 1) ? null : args[0];
+        String command = (args.length < 1) ? null : args[0];
         try {
-            Registry registry = LocateRegistry.getRegistry(host);
-            Ble6LowpanController stub = (Ble6LowpanController) registry.lookup("jble6lowpand");
-            System.out.println(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
+            Registry registry = LocateRegistry.getRegistry(null);
+            Ble6LowpanController stub = (Ble6LowpanController) registry.lookup(ControllerName);
+
+            if (command != null) {
+                if (command.toLowerCase().equals("list"))
+                    System.out.println(stub.getConnectedDevices().stream().collect(Collectors.joining(", ")));
+                else if (command.toLowerCase().equals("known"))
+                    System.out.println(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
+            }
         } catch (Exception e) {
             logger.error("Client exception: " + e.toString());
             e.printStackTrace();

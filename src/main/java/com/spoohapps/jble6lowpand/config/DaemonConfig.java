@@ -4,5 +4,6 @@ public interface DaemonConfig {
     int getScanDurationMs();
     int getScanTimeoutMs();
     int getConnectTimeoutMs();
+    int getControllerPort();
     String getWhitelistPath();
 }

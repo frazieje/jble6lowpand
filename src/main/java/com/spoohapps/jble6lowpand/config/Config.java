@@ -12,26 +12,30 @@ public class Config implements DaemonConfig {
     private static final List<String> scanTimeoutKeys = Arrays.asList("scanTimeout", "t");
     private static final List<String> connectTimeoutKeys = Arrays.asList("connectTimeout", "c");
     private static final List<String> whitelistPathKeys = Arrays.asList("whitelistPath", "w");
+    private static final List<String> controllerPortKeys = Arrays.asList("comtrollerPort", "p");
 
     private static final int defaultScanDurationMs = 5000;
     private static final int defaultTimeBetweenScansMs = 5000;
     private static final int defaultTimeBetweenConnectionAttemptsMs = 3000;
 
+    private static final int defaultControllerPort = 1099;
+
     private static final String defaultWhitelistPath = "./knowndevices.conf";
 
     private static final Set<String> allKeys =
-            Stream.of(durationKeys, scanTimeoutKeys, connectTimeoutKeys, whitelistPathKeys)
+            Stream.of(durationKeys, scanTimeoutKeys, connectTimeoutKeys, whitelistPathKeys, controllerPortKeys)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
 
     private static final Set<String> integerKeys =
-            Stream.of(durationKeys, scanTimeoutKeys, connectTimeoutKeys)
+            Stream.of(durationKeys, scanTimeoutKeys, connectTimeoutKeys, controllerPortKeys)
                     .flatMap(Collection::stream)
                     .collect(Collectors.toSet());
 
     private int scanDurationMs;
     private int scanTimeoutMs;
     private int connectTimeoutMs;
+    private int controllerPort;
     private String whitelistPath;
 
     private Config() {}
@@ -46,6 +50,7 @@ public class Config implements DaemonConfig {
         result.scanTimeoutMs = defaultTimeBetweenScansMs;
         result.connectTimeoutMs = defaultTimeBetweenConnectionAttemptsMs;
         result.whitelistPath = defaultWhitelistPath;
+        result.controllerPort = defaultControllerPort;
         return result;
     }
 
@@ -98,6 +103,8 @@ public class Config implements DaemonConfig {
             scanTimeoutMs = config.getScanTimeoutMs();
         if (config.getConnectTimeoutMs() > 0)
             connectTimeoutMs = config.getConnectTimeoutMs();
+        if (config.getControllerPort() > 0)
+            controllerPort = config.getControllerPort();
         if (config.getWhitelistPath() != null)
             whitelistPath = config.getWhitelistPath();
         return this;
@@ -114,6 +121,8 @@ public class Config implements DaemonConfig {
                         scanTimeoutMs = intVal;
                     } else if (connectTimeoutKeys.contains(arg)) {
                         connectTimeoutMs = intVal;
+                    } else if (controllerPortKeys.contains(arg)) {
+                        controllerPort = intVal;
                     }
                 } catch (Exception e) {
                 }
@@ -135,7 +144,8 @@ public class Config implements DaemonConfig {
 
         if (scanDurationMs != other.getScanDurationMs()
             || scanTimeoutMs != other.getScanTimeoutMs()
-            || connectTimeoutMs != other.getConnectTimeoutMs()) {
+            || connectTimeoutMs != other.getConnectTimeoutMs()
+            || controllerPort != other.getControllerPort()) {
             return false;
         }
 
@@ -160,6 +170,11 @@ public class Config implements DaemonConfig {
     @Override
     public int getConnectTimeoutMs() {
         return connectTimeoutMs;
+    }
+
+    @Override
+    public int getControllerPort() {
+        return controllerPort;
     }
 
     @Override
