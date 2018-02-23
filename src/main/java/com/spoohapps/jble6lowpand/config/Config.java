@@ -12,7 +12,7 @@ public class Config implements DaemonConfig {
     private static final List<String> scanTimeoutKeys = Arrays.asList("scanTimeout", "t");
     private static final List<String> connectTimeoutKeys = Arrays.asList("connectTimeout", "c");
     private static final List<String> whitelistPathKeys = Arrays.asList("whitelistPath", "w");
-    private static final List<String> controllerPortKeys = Arrays.asList("comtrollerPort", "p");
+    private static final List<String> controllerPortKeys = Arrays.asList("controllerPort", "p");
 
     private static final int defaultScanDurationMs = 5000;
     private static final int defaultTimeBetweenScansMs = 5000;
