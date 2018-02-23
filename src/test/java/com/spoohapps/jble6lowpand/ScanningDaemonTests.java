@@ -78,6 +78,11 @@ public class ScanningDaemonTests {
         }
 
         @Override
+        public int getControllerPort() {
+            return 1099;
+        }
+
+        @Override
         public String getWhitelistPath() {
             return "some path";
         }

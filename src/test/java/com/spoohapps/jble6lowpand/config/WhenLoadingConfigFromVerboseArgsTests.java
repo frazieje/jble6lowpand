@@ -12,6 +12,7 @@ public class WhenLoadingConfigFromVerboseArgsTests {
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;
     private int expectedScanDurationMs = 3000;
+    private int expectedControllerPort = 1234;
     private String expectedWhitelistPath = "/path";
 
     private DaemonConfig config;
@@ -22,6 +23,7 @@ public class WhenLoadingConfigFromVerboseArgsTests {
                 "-scanDuration", "" + expectedScanDurationMs,
                 "-scanTimeout", "" + expectedScanTimeoutMs,
                 "-connectTimeout", "" + expectedConnectTimeoutMs,
+                "-controllerPort", "" + expectedControllerPort,
                 "-whitelistPath", expectedWhitelistPath
         };
 
@@ -41,6 +43,11 @@ public class WhenLoadingConfigFromVerboseArgsTests {
     @Test
     public void ShouldSetConnectimeout() {
         assertEquals(expectedConnectTimeoutMs, config.getConnectTimeoutMs());
+    }
+
+    @Test
+    public void ShouldSetControllerPort() {
+        assertEquals(expectedControllerPort, config.getControllerPort());
     }
 
     @Test

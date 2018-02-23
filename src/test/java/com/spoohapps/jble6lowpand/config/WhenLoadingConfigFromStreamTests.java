@@ -25,6 +25,7 @@ public class WhenLoadingConfigFromStreamTests {
                 "scanDuration=1000",
                 "connectTimeout=500",
                 "t=750",
+                "p=1234",
                 "whitelistPath=/etc/jble6lowpand"
         );
 
@@ -48,6 +49,11 @@ public class WhenLoadingConfigFromStreamTests {
     @Test
     public void ShouldSetConnectimeout() {
         assertTrue(config.getConnectTimeoutMs() > 0);
+    }
+
+    @Test
+    public void ShouldSetConntrollerPort() {
+        assertTrue(config.getControllerPort() > 0);
     }
 
     @Test

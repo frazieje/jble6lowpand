@@ -12,6 +12,7 @@ public class WhenCascadingConfigsTests {
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;
     private int expectedScanDurationMs = 3000;
+    private int expectedControllerPort = 42;
     private String expectedWhitelistPath = "/path";
 
 
@@ -23,6 +24,7 @@ public class WhenCascadingConfigsTests {
                 "-d", "1",
                 "-t", "2",
                 "-c", "3",
+                "-p", "34",
                 "-w", "4"
         };
 
@@ -30,6 +32,7 @@ public class WhenCascadingConfigsTests {
                 "-d", "" + expectedScanDurationMs,
                 "-t", "" + expectedScanTimeoutMs,
                 "-c", "" + expectedConnectTimeoutMs,
+                "-p", "" + expectedControllerPort,
                 "-w", expectedWhitelistPath
         };
 
@@ -49,6 +52,11 @@ public class WhenCascadingConfigsTests {
     @Test
     public void ShouldSetConnectimeout() {
         assertEquals(expectedConnectTimeoutMs, config.getConnectTimeoutMs());
+    }
+
+    @Test
+    public void ShouldSetControllerPort() {
+        assertEquals(expectedControllerPort, config.getControllerPort());
     }
 
     @Test

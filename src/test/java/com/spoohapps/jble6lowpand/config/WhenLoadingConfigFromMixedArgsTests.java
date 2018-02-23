@@ -12,6 +12,7 @@ public class WhenLoadingConfigFromMixedArgsTests {
     private int expectedScanTimeoutMs = 1000;
     private int expectedConnectTimeoutMs = 2000;
     private int expectedScanDurationMs = 3000;
+    private int expectedControllerPort = 1234;
     private String expectedWhitelistPath = "/path";
 
     private DaemonConfig config;
@@ -22,7 +23,8 @@ public class WhenLoadingConfigFromMixedArgsTests {
                 "-scanDuration", "" + expectedScanDurationMs,
                 "-t", "" + expectedScanTimeoutMs,
                 "-connectTimeout", "" + expectedConnectTimeoutMs,
-                "-w", expectedWhitelistPath
+                "-w", expectedWhitelistPath,
+                "-controllerPort", "" + expectedControllerPort
         };
 
         config = Config.fromArgs(args);
@@ -41,6 +43,11 @@ public class WhenLoadingConfigFromMixedArgsTests {
     @Test
     public void ShouldSetConnectimeout() {
         assertEquals(expectedConnectTimeoutMs, config.getConnectTimeoutMs());
+    }
+
+    @Test
+    public void ShouldSetControllerPort() {
+        assertEquals(expectedControllerPort, config.getControllerPort());
     }
 
     @Test
