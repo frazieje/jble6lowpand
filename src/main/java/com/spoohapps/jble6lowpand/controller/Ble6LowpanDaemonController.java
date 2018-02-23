@@ -1,6 +1,5 @@
 package com.spoohapps.jble6lowpand.controller;
 
-import com.spoohapps.jble6lowpand.Ble6LowpanController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,9 +9,9 @@ import java.util.stream.Collectors;
 
 import static com.spoohapps.jble6lowpand.ScanningDaemon.ControllerName;
 
-public class ScanningDaemonController {
+public class Ble6LowpanDaemonController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ScanningDaemonController.class);
+    private static final Logger logger = LoggerFactory.getLogger(Ble6LowpanDaemonController.class);
 
     public static void main(String[] args) {
         String command = (args.length < 1) ? null : args[0];

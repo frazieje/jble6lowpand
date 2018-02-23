@@ -1,4 +1,4 @@
-package com.spoohapps.jble6lowpand;
+package com.spoohapps.jble6lowpand.controller;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

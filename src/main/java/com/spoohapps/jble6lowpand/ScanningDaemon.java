@@ -2,6 +2,9 @@ package com.spoohapps.jble6lowpand;
 
 import com.spoohapps.jble6lowpand.config.Config;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
+import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
+import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerService;
+import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerService;
 import com.spoohapps.jble6lowpand.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
@@ -34,13 +37,11 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
 
     private ScheduledExecutorService scanningExecutorService;
 
-    private Registry rmiRegistry;
+    private Ble6LowpanControllerService controllerService;
 
     private DaemonConfig config;
 
     private final Logger logger = LoggerFactory.getLogger(ScanningDaemon.class);
-
-    public static final String ControllerName = "jble6lowpand";
 
     public ScanningDaemon() {}
 
@@ -48,13 +49,14 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
         initialize(args);
     }
 
-    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, Ble6LowpanIpspService ble6LowpanIpspService, DaemonConfig config) {
+    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, Ble6LowpanIpspService ble6LowpanIpspService, DaemonConfig config, Ble6LowpanControllerService controllerService) {
         this.scanningExecutorService = Executors.newScheduledThreadPool(3);
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
         this.knownDevices = knownDeviceRepository;
         this.ble6LowpanIpspService = ble6LowpanIpspService;
         this.config = config;
+        this.controllerService = controllerService;
     }
 
     public static void main(String[] args) {
@@ -86,6 +88,7 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
         connectedDevices = new CopyOnWriteArraySet<>();
         knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
         ble6LowpanIpspService = new NativeBle6LowpanIpspService();
+        controllerService = new RemoteBle6LowpanControllerService(this, config.getControllerPort());
     }
 
 	@Override
@@ -111,7 +114,7 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
 
         knownDevices.stopWatcher();
 
-        stopController();
+        controllerService.stop();
 
         logger.info("Stopped");
 	}
@@ -124,7 +127,7 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
 	public void start() {
         try {
             logger.info("Starting...");
-            startController();
+            controllerService.start();
             knownDevices.startWatcher();
             scanningExecutorService.scheduleWithFixedDelay(
                     new BleIpspScanner(ble6LowpanIpspService, config.getScanDurationMs(), availableDevices),
@@ -142,25 +145,6 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
             for (StackTraceElement se : e.getStackTrace())
                 logger.error(se.toString());
             throw e;
-        }
-    }
-
-    private void startController() {
-        try {
-            rmiRegistry = LocateRegistry.createRegistry(1099);
-            rmiRegistry.bind(ControllerName, UnicastRemoteObject.exportObject(this, 0));
-            logger.info("RMI Server ready");
-        } catch (Exception e) {
-            logger.error("RMI Server exception: " + e.getMessage());
-        }
-    }
-
-    private void stopController() {
-        try {
-            rmiRegistry.unbind(ControllerName);
-            UnicastRemoteObject.unexportObject(this, true);
-        } catch (Exception ex) {
-            logger.error("RMI server exception: " + ex.getMessage());
         }
     }
 

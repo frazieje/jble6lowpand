@@ -47,7 +47,7 @@ CLASS_PATH="$JAR_PATH:$FILE_PATH/build/output/libs/commons-daemon-1.0.15.jar:$FI
 CLASS="com.spoohapps.jble6lowpand.ScanningDaemon"
 
 # The fully qualified name of the cli class
-CLI_CLASS="com.spoohapps.jble6lowpand.controller.ScanningDaemonController"
+CLI_CLASS="com.spoohapps.jble6lowpand.controller.Ble6LowpanDaemonController"
 
 # library path for jni
 LOADLIB="$FILE_PATH/jni/libs/arm32"

@@ -1,5 +1,6 @@
 package com.spoohapps.jble6lowpand;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
+import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerService;
 import com.spoohapps.jble6lowpand.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
@@ -13,12 +14,14 @@ public class ScanningDaemonTests {
     private ScanningDaemon daemon;
     private KnownDeviceRepository knownDevices;
     private FakeBle6LowpanIpspService ipspService;
+    private Ble6LowpanControllerService controllerService;
 
     @BeforeAll
     public void context() {
         knownDevices = new InMemoryKnownDeviceRepository();
         ipspService = new FakeBle6LowpanIpspService();
-        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig());
+        controllerService = new FakeBle6LowpanControllerService();
+        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), controllerService);
         try {
             daemon.start();
         } catch (Exception e) {
