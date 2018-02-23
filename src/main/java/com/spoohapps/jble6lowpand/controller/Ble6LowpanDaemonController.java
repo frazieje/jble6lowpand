@@ -7,7 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.stream.Collectors;
 
-import static com.spoohapps.jble6lowpand.ScanningDaemon.ControllerName;
+import static com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerService.ControllerName;
 
 public class Ble6LowpanDaemonController {
 
