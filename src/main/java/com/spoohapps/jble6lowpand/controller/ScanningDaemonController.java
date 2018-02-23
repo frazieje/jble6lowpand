@@ -21,9 +21,9 @@ public class ScanningDaemonController {
             Ble6LowpanController stub = (Ble6LowpanController) registry.lookup(ControllerName);
 
             if (command != null) {
-                if (command.toLowerCase().equals("list"))
+                if (command.toLowerCase().equals("-list"))
                     System.out.println(stub.getConnectedDevices().stream().collect(Collectors.joining(", ")));
-                else if (command.toLowerCase().equals("known"))
+                else if (command.toLowerCase().equals("-known"))
                     System.out.println(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
             }
         } catch (Exception e) {
