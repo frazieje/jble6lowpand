@@ -32,7 +32,7 @@ CLI_EXEC="$JAVA_HOME/bin/java"
 JAR_PATH="$FILE_PATH/build/libs/jble6lowpand-0.1.jar"
 
 # The path to the logging framework to be linked for the daemon via slf4j
-LOG_CLASS_PATH="$FILE_PATH/build/output/libs/logback-classic.1.2.3.jar:$FILE_PATH/build/output/libs/logback-core-1.2.3.jar"
+LOG_CLASS_PATH="$FILE_PATH/build/output/libs/logback-classic-1.2.3.jar:$FILE_PATH/build/output/libs/logback-core-1.2.3.jar"
 
 # The path to the logging framework to be linked for the cli via slf4j
 CLI_LOG_CLASS_PATH="$FILE_PATH/build/output/libs/slf4j-simple-1.7.25.jar"
