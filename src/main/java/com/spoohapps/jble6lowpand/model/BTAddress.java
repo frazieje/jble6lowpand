@@ -6,6 +6,7 @@ import com.spoohapps.jble6lowpand.util.BTAddressValidatorImpl;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
 
 public class BTAddress {
 
@@ -52,6 +53,27 @@ public class BTAddress {
                 hexChars[j * 3 + 2] = ':';
         }
         return new String(hexChars);
+    }
+
+    public static BTAddress random() {
+        Random random = new Random();
+        String[] chars = new String[] { "A", "B", "C", "D", "E", "F" };
+
+        String address = "";
+
+        for (int i = 1; i <= 12; i++) {
+            int num = Math.abs(random.nextInt()) % 16;
+            if (num > 9) {
+                address += chars[num-10];
+            } else {
+                address += num;
+            }
+            if (i % 2 == 0 && i != 12) {
+                address += ":";
+            }
+        }
+
+        return new BTAddress(address);
     }
 
     @Override

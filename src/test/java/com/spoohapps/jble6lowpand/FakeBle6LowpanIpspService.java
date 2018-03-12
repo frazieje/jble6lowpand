@@ -40,7 +40,7 @@ public class FakeBle6LowpanIpspService implements Ble6LowpanIpspService {
             }
         }
 		for (int i = 0; i < num; i++) {
-			addresses.add(new BTAddress(generateRandomBTAddress()));
+			addresses.add(BTAddress.random());
 		}
 		try {
 			Thread.sleep(timeoutMs);
@@ -71,25 +71,6 @@ public class FakeBle6LowpanIpspService implements Ble6LowpanIpspService {
 		return connections.toArray(new String[0]);
 	}		
 	
-	private String generateRandomBTAddress() {
-		Random random = new Random();
-		String[] chars = new String[] { "A", "B", "C", "D", "E", "F" };
-		
-		String address = "";		
-		
-		for (int i = 1; i <= btAddressLength; i++) {
-			int num = Math.abs(random.nextInt()) % 16;
-			if (num > 9) {
-				address += chars[num-10];
-			} else {
-				address += num;
-			}
-			if (i % 2 == 0 && i != btAddressLength) {
-				address += ":";
-			}
-		}
-		
-		return address;
-	}
+
 
 }
