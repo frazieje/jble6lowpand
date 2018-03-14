@@ -13,7 +13,6 @@ To determine which devices to connect, the daemon uses a file-based whitelist. T
 ### Prerequesites
 Before the daemon can be used, you need a linux machine with access to bluetooth hardware, and with support for the bluetooth_6lowpan kernel module.
 ### Getting started
-Clone this repository to /usr/local/jble6lowpand
 
 After cloning the repository, use gradle to build the daemon: 
 ``` bash
