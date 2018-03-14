@@ -10,7 +10,7 @@ extern "C" {
 /*
  * Class:     com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService
  * Method:    scanIpspDevicesInternal
- * Signature: (I)[Ljava/lang/String;
+ * Signature: (I)[Lcom/spoohapps/jble6lowpand/model/BTAddress;
  */
 JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_scanIpspDevicesInternal
   (JNIEnv *, jobject, jint);
