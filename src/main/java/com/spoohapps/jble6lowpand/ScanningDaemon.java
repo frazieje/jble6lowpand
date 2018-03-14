@@ -150,41 +150,33 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
     }
 
     @Override
-    public Set<String> getAvailableDevices() {
-        return availableDevices.stream()
-                .map(BTAddress::toString)
-                .collect(Collectors.toSet());
+    public Set<BTAddress> getAvailableDevices() {
+        return availableDevices;
     }
 
     @Override
-    public Set<String> getKnownDevices() {
-        return knownDevices.getAll().stream()
-                .map(BTAddress::toString)
-                .collect(Collectors.toSet());
+    public Set<BTAddress> getKnownDevices() {
+        return knownDevices.getAll();
     }
 
     @Override
-    public Set<String> getConnectedDevices() {
-        return connectedDevices.stream()
-                .map(BTAddress::toString)
-                .collect(Collectors.toSet());
+    public Set<BTAddress> getConnectedDevices() {
+        return connectedDevices;
     }
 
     @Override
-    public void addKnownDevice(String address) {
+    public void addKnownDevice(BTAddress address) {
         try {
-            BTAddress btAddress = new BTAddress(address);
-            knownDevices.add(btAddress);
+            knownDevices.add(address);
         } catch (IllegalArgumentException iae) {
             logger.error("Can not add device. Invalid bluetooth address.");
         }
     }
 
     @Override
-    public void removeKnownDevice(String address) {
+    public void removeKnownDevice(BTAddress address) {
         try {
-            BTAddress btAddress = new BTAddress(address);
-            knownDevices.remove(btAddress);
+            knownDevices.remove(address);
         } catch (IllegalArgumentException iae) {
             logger.error("Can not remove device. Invalid bluetooth address.");
         }

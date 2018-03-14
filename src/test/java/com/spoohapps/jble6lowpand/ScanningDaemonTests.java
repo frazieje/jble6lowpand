@@ -54,7 +54,7 @@ public class ScanningDaemonTests {
         knownDevices.add(knownAddress);
         ipspService.addSeedAddress(knownAddress);
         sleep(500);
-        assertTrue(daemon.getConnectedDevices().contains(knownAddress.toString()));
+        assertTrue(daemon.getConnectedDevices().contains(knownAddress));
     }
 
     @Test

@@ -56,8 +56,7 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     private Set<BTAddress> getFileContents() {
         try {
-            Set<BTAddress> addresses =  Files.lines(filePath).map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
-            return addresses;
+            return Files.lines(filePath).map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -76,6 +75,13 @@ public class FileBasedKnownDeviceRepositoryTests {
     @Test
     public void ShouldSaveAddedAddressesToFile() {
         BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
+        knownDevices.add(address);
+        assertTrue(getFileContents().contains(address));
+    }
+
+    @Test
+    public void ShouldSaveAddedAddressesWithNamesToFile() {
+        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF testName");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }

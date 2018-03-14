@@ -30,7 +30,7 @@ public class FakeBle6LowpanIpspService implements Ble6LowpanIpspService {
     }
 	
 	@Override
-	public String[] scanIpspDevices(int timeoutMs) {
+	public BTAddress[] scanIpspDevices(int timeoutMs) {
 		Random random = new Random();
 		int num = (Math.abs(random.nextInt()) % maxNumOfFakeConnections) + 1;
         List<BTAddress> addresses = new ArrayList<>();
@@ -47,7 +47,7 @@ public class FakeBle6LowpanIpspService implements Ble6LowpanIpspService {
 		} catch(InterruptedException ie) {
 			
 		}
-		return addresses.stream().map(BTAddress::toString).toArray(String[]::new);
+		return addresses.toArray(new BTAddress[0]);
 	}
 
 	@Override

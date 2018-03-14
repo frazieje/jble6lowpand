@@ -1,7 +1,9 @@
 package com.spoohapps.jble6lowpand;
 
+import com.spoohapps.jble6lowpand.model.BTAddress;
+
 public interface Ble6LowpanIpspService {
-	String[] scanIpspDevices(int timeoutMs);
+	BTAddress[] scanIpspDevices(int timeoutMs);
 	boolean connectIpspDevice(String address);
 	boolean disconnectIpspDevice(String address);
 	String[] getConnectedIpspDevices();

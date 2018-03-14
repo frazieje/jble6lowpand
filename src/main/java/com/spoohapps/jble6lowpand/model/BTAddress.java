@@ -14,14 +14,33 @@ public class BTAddress {
 
     public BTAddress(String address) {
 
-        if (!btAddressValidator.validate(address))
+        String addressStr = address.trim();
+        String nameStr = null;
+
+        if (address.contains(" ")) {
+            int index = address.indexOf(" ");
+            addressStr = address.substring(0, index);
+            nameStr = address.substring(index + 1);
+        }
+
+        if (!btAddressValidator.validate(addressStr))
             throw new IllegalArgumentException("Not a valid Bluetooth address.");
 
-        data = hexStringToByteArray(address);
+        data = hexStringToByteArray(addressStr);
+        name = nameStr;
     }
 
     public BTAddress(byte[] data) {
         this.data = data;
+    }
+
+    public BTAddress(byte[] data, String name) {
+        this(data);
+        this.name = name;
+    }
+
+    public BTAddress(String address, String name) {
+        this(address + " " + name);
     }
 
     public byte[] getData() {
@@ -29,6 +48,8 @@ public class BTAddress {
     }
 
     private byte[] data;
+
+    private String name;
 
     private static byte[] hexStringToByteArray(String hex) {
         String s = hex.replaceAll("[:-]", "");
@@ -76,9 +97,18 @@ public class BTAddress {
         return new BTAddress(address);
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
-        return byteArrayToHexString(data);
+        String displayName = name != null && !name.equals("") ? name : "";
+        return byteArrayToHexString(data) + (!displayName.isEmpty() ? (" " + displayName) : "");
     }
 
     @Override

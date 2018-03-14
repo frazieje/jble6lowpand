@@ -1,5 +1,7 @@
 package com.spoohapps.jble6lowpand;
 
+import com.spoohapps.jble6lowpand.model.BTAddress;
+
 public class NativeBle6LowpanIpspService implements Ble6LowpanIpspService {
 	
 	static {
@@ -7,11 +9,11 @@ public class NativeBle6LowpanIpspService implements Ble6LowpanIpspService {
 	}	
 	
 	@Override
-	public String[] scanIpspDevices(int timeoutMs) {
+	public BTAddress[] scanIpspDevices(int timeoutMs) {
 		return scanIpspDevicesInternal((timeoutMs / 1000));
 	}
 
-	private native String[] scanIpspDevicesInternal(int timeoutSeconds);
+	private native BTAddress[] scanIpspDevicesInternal(int timeoutSeconds);
 
 	@Override
 	public native boolean connectIpspDevice(String address);

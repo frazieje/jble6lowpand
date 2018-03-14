@@ -38,4 +38,34 @@ public class BTAddressTests {
 
     }
 
+    @Test
+    public void shouldConstructWithName() {
+
+        String addressString = "78:4f:43:62:6f:58";
+
+        String expectedName = "testName";
+        BTAddress address = new BTAddress(new byte[] { 120,79,67,98,111,88 }, expectedName);
+
+        assertTrue(
+                address.toString().toLowerCase().equals(addressString + " " + expectedName.toLowerCase())
+                        && address.getName().equals(expectedName)
+        );
+
+    }
+
+    @Test
+    public void shouldConstructWithNameInString() {
+
+        String expectedName = "testName";
+        String addressString = "78:4f:43:62:6f:58";
+
+        BTAddress address = new BTAddress(addressString + " " + expectedName);
+
+        assertTrue(
+                address.toString().toLowerCase().equals(addressString + " " + expectedName.toLowerCase())
+                        && address.getName().equals(expectedName)
+        );
+
+    }
+
 }

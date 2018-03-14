@@ -27,13 +27,13 @@ public class BleIpspScanner implements Runnable {
     public void run() {
         logger.trace("Scanning for ipsp devices");
         try {
-            String[] devices = ble6LowpanIpspService.scanIpspDevices(scanDurationSeconds);
+            BTAddress[] devices = ble6LowpanIpspService.scanIpspDevices(scanDurationSeconds);
             Set<BTAddress> availableAddresses = new HashSet<>();
             logger.trace("{} devices found", devices.length);
             for (int i = 0; i < devices.length; i++) {
                 try {
                     logger.trace("adding device {}", devices[i]);
-                    availableAddresses.add(new BTAddress(devices[i]));
+                    availableAddresses.add(devices[i]);
                 } catch (IllegalArgumentException iae) {
                     logger.trace("Error deserializing BT address");
                 }

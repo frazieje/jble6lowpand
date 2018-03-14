@@ -1,5 +1,6 @@
 package com.spoohapps.jble6lowpand.controller;
 
+import com.spoohapps.jble6lowpand.model.BTAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +22,9 @@ public class Ble6LowpanDaemonController {
 
             if (command != null) {
                 if (command.toLowerCase().equals("-list"))
-                    System.out.println(stub.getConnectedDevices().stream().collect(Collectors.joining(", ")));
+                    System.out.println(stub.getConnectedDevices().stream().map(BTAddress::toString).collect(Collectors.joining(", ")));
                 else if (command.toLowerCase().equals("-known"))
-                    System.out.println(stub.getKnownDevices().stream().collect(Collectors.joining(", ")));
+                    System.out.println(stub.getKnownDevices().stream().map(BTAddress::toString).collect(Collectors.joining(", ")));
             }
         } catch (Exception e) {
             logger.error("Client exception: " + e.toString());
