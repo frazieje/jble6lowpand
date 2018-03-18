@@ -105,6 +105,10 @@ public class BTAddress {
         this.name = name;
     }
 
+    public String getAddressString() {
+        return byteArrayToHexString(data);
+    }
+
     @Override
     public String toString() {
         String displayName = name != null && !name.equals("") ? name : "";
