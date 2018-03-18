@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class BTAddress implements Serializable {
 
-    private BTAddressValidator btAddressValidator = new BTAddressValidatorImpl();
+    private transient BTAddressValidator btAddressValidator = new BTAddressValidatorImpl();
 
     public BTAddress(String address) {
 
