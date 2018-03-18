@@ -219,6 +219,10 @@ static int scan_ipsp_device(int timeout, char addresses[][DEVICE_ADDR_LEN], char
 		perror("Disable scan failed");
 		return false;
 	}
+
+	if (dd >= 0)
+		hci_close_dev(dd);
+
 	return client_i;
 }
 
