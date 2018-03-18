@@ -4,11 +4,12 @@ package com.spoohapps.jble6lowpand.model;
 import com.spoohapps.jble6lowpand.util.BTAddressValidator;
 import com.spoohapps.jble6lowpand.util.BTAddressValidatorImpl;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 
-public class BTAddress {
+public class BTAddress implements Serializable {
 
     private BTAddressValidator btAddressValidator = new BTAddressValidatorImpl();
 
@@ -41,10 +42,6 @@ public class BTAddress {
 
     public BTAddress(String address, String name) {
         this(address + " " + name);
-    }
-
-    public byte[] getData() {
-        return data;
     }
 
     private byte[] data;
@@ -105,7 +102,7 @@ public class BTAddress {
         this.name = name;
     }
 
-    public String getAddressString() {
+    public String getAddress() {
         return byteArrayToHexString(data);
     }
 
@@ -120,7 +117,7 @@ public class BTAddress {
         BTAddress otherAddress = (BTAddress)other;
         if (other == null)
             return false;
-        return Arrays.equals(getData(), otherAddress.getData());
+        return Arrays.equals(data, otherAddress.data);
     }
 
     @Override

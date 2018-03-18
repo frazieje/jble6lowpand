@@ -34,7 +34,7 @@ public class BleIpspConnector implements Runnable {
                 if (!connectedDevices.contains(address)) {
                     String message = "connecting to " + address.toString() + " ...";
                     try {
-                        if (ble6LowpanIpspService.connectIpspDevice(address.getAddressString())) {
+                        if (ble6LowpanIpspService.connectIpspDevice(address.getAddress())) {
                             logger.trace("{} success", message);
                         } else {
                             logger.trace("{} failed", message);
