@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
-	private final WhitelistFileWatcher watcher;
+	//private final WhitelistFileWatcher watcher;
 	private final Path filePath;
 
 	private final Set<BTAddress> knownDevices;
@@ -26,18 +26,18 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
     }
 	
 	public FileBasedKnownDeviceRepository(Path filePath) {
-		this.watcher = new WhitelistFileWatcher(filePath, this::onFileChanged);
+		//this.watcher = new WhitelistFileWatcher(filePath, this::onFileChanged);
 		this.filePath = filePath;
 		knownDevices = new CopyOnWriteArraySet<>();
 	}
 
 	public void startWatcher() {
         init();
-        watcher.start();
+        //watcher.start();
     }
 
     public void stopWatcher() {
-	    watcher.stop();
+	    //watcher.stop();
     }
 
     private void init() {
