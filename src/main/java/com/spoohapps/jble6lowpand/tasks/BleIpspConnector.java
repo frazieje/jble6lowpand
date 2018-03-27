@@ -28,44 +28,43 @@ public class BleIpspConnector implements Runnable {
 
     @Override
     public void run() {
-        logger.trace("Connecting to ipsp devices");
         for (BTAddress address : availableDevices) {
-            if (knownDevices.contains(address)) {
-                if (!connectedDevices.contains(address)) {
-                    String message = "connecting to " + address.toString() + " ...";
-                    try {
-                        if (ble6LowpanIpspService.connectIpspDevice(address.getAddress())) {
-                            logger.trace("{} success", message);
-                        } else {
-                            logger.trace("{} failed", message);
-                        }
-                    } catch (Exception e) {
-                        logger.trace("{} failed", message);
+            if (knownDevices.contains(address) && !connectedDevices.contains(address)) {
+                logger.info("Connecting to {} ... ", address.toString());
+                try {
+                    if (ble6LowpanIpspService.connectIpspDevice(address.getAddress())) {
+                        logger.info("Connected to {}", address.toString());
+                        break;
+                    } else {
+                        logger.error("Could not connect to {}", address.toString());
                     }
-                } else {
-                    logger.trace("ignoring already connected device {}", address.toString());
+                } catch (Exception e) {
+                    logger.error("Could not connect to {}", address.toString());
                 }
-            } else {
-                logger.trace("ignoring unknown device {}", address.toString());
             }
         }
-        logger.trace("updating connected ipsp devices");
         try {
             String[] devices = ble6LowpanIpspService.getConnectedIpspDevices();
             Set<BTAddress> connectedAddresses = new HashSet<>();
             for (int i = 0; i < devices.length; i++) {
                 try {
-                    logger.trace("Connected Device: {}", devices[i]);
-                    connectedAddresses.add(new BTAddress(devices[i]));
+                    BTAddress address = new BTAddress(devices[i]);
+                    connectedAddresses.add(address);
+                    if (!knownDevices.contains(address)) {
+                        try {
+                            ble6LowpanIpspService.disconnectIpspDevice(address.getAddress());
+                        } catch (Exception e) {
+                            logger.error("Error disconnecting from unknown connected BT address {}", devices[i]);
+                        }
+                    }
                 } catch (IllegalArgumentException iae) {
-                    logger.trace("Error deserializing BT address");
+                    logger.error("Error deserializing connected BT address {}", devices[i]);
                 }
             }
             connectedDevices.retainAll(connectedAddresses);
             connectedDevices.addAll(connectedAddresses);
-
-        } catch (IllegalArgumentException iae) {
-            logger.trace("Error deserializing BT address");
+        } catch (Exception e) {
+            logger.error("Error getting connected devices {}", e.getMessage());
         }
     }
 }

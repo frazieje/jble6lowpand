@@ -58,6 +58,14 @@ public class ScanningDaemonTests {
     }
 
     @Test
+    public void shouldDisconnectFromUnknownDevice() {
+        BTAddress unknownAddress = new BTAddress("35:80:41:4B:D0:E2");
+        ipspService.connectIpspDevice(unknownAddress.getAddress());
+        sleep(500);
+        assertFalse(daemon.getConnectedDevices().contains(unknownAddress));
+    }
+
+    @Test
     public void shouldScanForDevices() {
         sleep(500);
         assertTrue(daemon.getAvailableDevices().size() > 0);

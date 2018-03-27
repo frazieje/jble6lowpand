@@ -8,7 +8,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class FakeBle6LowpanIpspService implements Ble6LowpanIpspService {
 	
 	private static final int maxNumOfFakeConnections = 8;
-	private static final int btAddressLength = 12;
 	
 	private final CopyOnWriteArraySet<BTAddress> currentConnections = new CopyOnWriteArraySet<>();
 	private final CopyOnWriteArraySet<BTAddress> seedAddresses;
