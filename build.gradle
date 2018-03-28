@@ -47,31 +47,33 @@ task copyToLib(type: Copy) {
     from configurations.runtime
 }
 
-task generateJniHeaders(type:Exec) {
+task generateJniHeaders(type: Exec) {
     def classpath = sourceSets.main.output.classesDir
     commandLine "javah", "-d", "jni/src", "-classpath", classpath, "com.spoohapps.jble6lowpand.NativeBle6LowpanIpspService"
     dependsOn classes
 }
 
-task generateInitScript {
-    def template_vars = [install_path: "$projectDir"]
-    def java_home = System.env.'JAVA_HOME'
-    def template = file('init.template')
-    def tag = /<%.*%>/
-    def matches = (template.text =~ /$tag/)
-    def sb = new StringBuffer()
-    def i = 0
-    while (matches.find()) {
-        matches.appendReplacement(sb, template_vars.get(matches[i].substring(2, matches[i].length()-2).trim()))
-    }
-    matches.appendTail(sb)
-    new File("$buildDir")
-    new File("$buildDir/output").mkdir()
-    new File("$buildDir/output/init").mkdir()
-    if (java_home?.trim()) {
-        new File("$buildDir/output/init/jble6lowpand") << sb.toString()
-    } else {
-        println "JAVA_HOME is not set. Please set JAVA_HOME and try again"
+task generateInitScript(type: Copy) {
+    from "$projectDir/init.template"
+    into "$buildDir/output/init"
+    rename { file -> "jble6lowpand" }
+    doLast {
+        def template_vars = [install_path: "$projectDir"]
+        def java_home = System.env.'JAVA_HOME'
+        def template = new File("$buildDir/output/init/jble6lowpand")
+        def tag = /<%.*%>/
+        def matches = (template.text =~ /$tag/)
+        def sb = new StringBuffer()
+        def i = 0
+        while (matches.find()) {
+            matches.appendReplacement(sb, template_vars.get(matches[i].substring(2, matches[i].length()-2).trim()))
+        }
+        matches.appendTail(sb)
+        if (java_home?.trim()) {
+            new File("$buildDir/output/init/jble6lowpand") << sb.toString()
+        } else {
+            println "JAVA_HOME is not set. Please set JAVA_HOME and try again"
+        }
     }
 }
 
