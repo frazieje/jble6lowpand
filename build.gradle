@@ -53,7 +53,7 @@ task generateJniHeaders(type:Exec) {
     dependsOn classes
 }
 
-task generateInitScript(dependsOn: build) {
+task generateInitScript {
     def template_vars = [install_path: "$projectDir"]
     def java_home = System.env.'JAVA_HOME'
     def template = file('init.template')
@@ -65,6 +65,7 @@ task generateInitScript(dependsOn: build) {
         matches.appendReplacement(sb, template_vars.get(matches[i].substring(2, matches[i].length()-2).trim()))
     }
     matches.appendTail(sb)
+    new File("$buildDir")
     new File("$buildDir/output").mkdir()
     new File("$buildDir/output/init").mkdir()
     if (java_home?.trim()) {
