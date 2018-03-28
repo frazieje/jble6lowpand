@@ -24,6 +24,9 @@ FILE_PATH="<% install_path %>"
 # The path to Jsvc
 EXEC="/usr/bin/jsvc"
 
+#The path to java home
+JAVA_HOME="<% java_home %>"
+
 # The path to the java executable
 CLI_EXEC="$JAVA_HOME/bin/java"
 

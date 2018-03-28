@@ -59,7 +59,8 @@ task generateInitScript(type: Copy) {
             throw new GradleException("JAVA_HOME is not set. Please set JAVA_HOME and try again")
         }
     }
-    def template_vars = [install_path: "$projectDir"]
+    def template_vars = [install_path: "$projectDir",
+                         java_home: System.env.'JAVA_HOME'?.trim()]
     def tag = /<%.*%>/
     from "$projectDir/init.template"
     into "$buildDir/output/init"
