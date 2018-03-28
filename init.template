@@ -67,9 +67,7 @@ LOG_OUT="$FILE_PATH/log/$NAME.out"
 LOG_ERR="$FILE_PATH/err/$NAME.err"
 
 jsvc_exec()
-{   
-    killall bluetoothd
-    sleep 1
+{
     hciconfig hci0 reset
     sleep 1
     cd $FILE_PATH
