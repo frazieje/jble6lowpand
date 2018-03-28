@@ -40,6 +40,7 @@ public class BleIpspConnector implements Runnable {
                     }
                 } catch (Exception e) {
                     logger.error("Could not connect to {}", address.toString());
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -55,6 +56,7 @@ public class BleIpspConnector implements Runnable {
                             ble6LowpanIpspService.disconnectIpspDevice(address.getAddress());
                         } catch (Exception e) {
                             logger.error("Error disconnecting from unknown connected BT address {}", devices[i]);
+                            logger.error(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException iae) {
@@ -65,6 +67,7 @@ public class BleIpspConnector implements Runnable {
             connectedDevices.addAll(connectedAddresses);
         } catch (Exception e) {
             logger.error("Error getting connected devices {}", e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 }
