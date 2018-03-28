@@ -54,28 +54,26 @@ task generateJniHeaders(type: Exec) {
 }
 
 task generateInitScript(type: Copy) {
+    doFirst {
+        if (!System.env.'JAVA_HOME'?.trim()) {
+            throw new GradleException("JAVA_HOME is not set. Please set JAVA_HOME and try again")
+        }
+    }
+    def template_vars = [install_path: "$projectDir"]
+    def tag = /<%.*%>/
     from "$projectDir/init.template"
     into "$buildDir/output/init"
     rename { file -> "jble6lowpand" }
-    doLast {
-        def template_vars = [install_path: "$projectDir"]
-        def java_home = System.env.'JAVA_HOME'
-        def template = new File("$buildDir/output/init/jble6lowpand")
-        def tag = /<%.*%>/
-        def matches = (template.text =~ /$tag/)
+    filter { line ->
         def sb = new StringBuffer()
+        def matches = (line =~ /$tag/)
         def i = 0
         while (matches.find()) {
             matches.appendReplacement(sb, template_vars.get(matches[i].substring(2, matches[i].length()-2).trim()))
         }
         matches.appendTail(sb)
-        if (java_home?.trim()) {
-            new File("$buildDir/output/init/jble6lowpand") << sb.toString()
-        } else {
-            new File("$buildDir/output/init/jble6lowpand").delete()
-            println "JAVA_HOME is not set. Please set JAVA_HOME and try again"
-        }
-    }
+        return sb.toString()
+    }             
 }
 
 build.dependsOn(copyToLib)

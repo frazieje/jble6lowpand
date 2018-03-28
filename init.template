@@ -5,6 +5,8 @@
 # Provides:          jble6lowpand
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
 # Short-Description: Starts the Bluetooth 6Lowpan service
 # Description:       This file is used to start the daemon
 #                    and should be placed in /etc/init.d
@@ -63,6 +65,10 @@ LOG_ERR="$FILE_PATH/err/$NAME.err"
 
 jsvc_exec()
 {   
+    killall bluetoothd
+    sleep 1
+    hciconfig hci0 reset
+    sleep 1
     cd $FILE_PATH
     $EXEC -home $JAVA_HOME -cp $CLASS_PATH -Djava.library.path=$LOADLIB -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
 }
@@ -76,11 +82,6 @@ cli_exec()
 case "$1" in
     start)  
         echo "Starting the $DESC..."        
-
-        killall bluetoothd
-        sleep 1
-        hciconfig hci0 reset
-        sleep 1
 
         # Start the service
         jsvc_exec
@@ -103,11 +104,6 @@ case "$1" in
             # Stop the service
             jsvc_exec "-stop"
 
-            killall bluetoothd
-            sleep 1
-            hciconfig hci0 reset
-            sleep 1
-            
             # Start the service
             jsvc_exec
             
