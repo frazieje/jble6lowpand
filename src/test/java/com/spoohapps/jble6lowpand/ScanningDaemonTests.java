@@ -37,7 +37,11 @@ public class ScanningDaemonTests {
 
     @AfterAll
     public void teardown() {
-        daemon.destroy();
+        try {
+            daemon.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void sleep(int timeMs) {
