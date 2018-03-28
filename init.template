@@ -17,13 +17,10 @@ NAME="jble6lowpand"
 DESC="Bluetooth 6Lowpan connector service"
 
 # The path to the folder of the repository
-FILE_PATH="/usr/local/$NAME"
+FILE_PATH="<% install_path %>"
 
 # The path to Jsvc
 EXEC="/usr/bin/jsvc"
-
-# The path to the folder containing the java runtime
-JAVA_HOME="/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt"
 
 # The path to the java executable
 CLI_EXEC="$JAVA_HOME/bin/java"
