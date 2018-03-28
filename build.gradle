@@ -72,6 +72,7 @@ task generateInitScript(type: Copy) {
         if (java_home?.trim()) {
             new File("$buildDir/output/init/jble6lowpand") << sb.toString()
         } else {
+            new File("$buildDir/output/init/jble6lowpand").delete()
             println "JAVA_HOME is not set. Please set JAVA_HOME and try again"
         }
     }
