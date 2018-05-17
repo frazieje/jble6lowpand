@@ -45,7 +45,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
         knownDevices.addAll(whitelistedAddresses);
     }
 
-    private void onFileChanged() {
+    private synchronized void onFileChanged() {
         Set<BTAddress> whitelistedAddresses = getStoredAddresses();
         knownDevices.retainAll(whitelistedAddresses);
         knownDevices.addAll(whitelistedAddresses);
