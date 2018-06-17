@@ -3,8 +3,8 @@ package com.spoohapps.jble6lowpand;
 import com.spoohapps.jble6lowpand.config.Config;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
-import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerService;
-import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerService;
+import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
+import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerBroadcaster;
 import com.spoohapps.jble6lowpand.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
@@ -19,12 +19,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 
 public class ScanningDaemon implements Daemon, Ble6LowpanController {
 	
@@ -37,7 +33,7 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
 
     private ScheduledExecutorService scanningExecutorService;
 
-    private Ble6LowpanControllerService controllerService;
+    private Ble6LowpanControllerBroadcaster controllerService;
 
     private DaemonConfig config;
 
@@ -49,7 +45,7 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
         initialize(args);
     }
 
-    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, Ble6LowpanIpspService ble6LowpanIpspService, DaemonConfig config, Ble6LowpanControllerService controllerService) {
+    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, Ble6LowpanIpspService ble6LowpanIpspService, DaemonConfig config, Ble6LowpanControllerBroadcaster controllerService) {
         this.scanningExecutorService = Executors.newScheduledThreadPool(3);
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
@@ -89,7 +85,7 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
         connectedDevices = new CopyOnWriteArraySet<>();
         knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
         ble6LowpanIpspService = new NativeBle6LowpanIpspService();
-        controllerService = new RemoteBle6LowpanControllerService(this, config.getControllerPort());
+        controllerService = new RemoteBle6LowpanControllerBroadcaster(this, config.getControllerPort());
     }
 
 	@Override

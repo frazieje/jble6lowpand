@@ -7,7 +7,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RemoteBle6LowpanControllerService implements Ble6LowpanControllerService{
+public class RemoteBle6LowpanControllerBroadcaster implements Ble6LowpanControllerBroadcaster {
 
     private final Ble6LowpanController controller;
 
@@ -16,9 +16,9 @@ public class RemoteBle6LowpanControllerService implements Ble6LowpanControllerSe
 
     public static final String ControllerName = "jble6lowpand";
 
-    private final Logger logger = LoggerFactory.getLogger(RemoteBle6LowpanControllerService.class);
+    private final Logger logger = LoggerFactory.getLogger(RemoteBle6LowpanControllerBroadcaster.class);
 
-    public RemoteBle6LowpanControllerService(Ble6LowpanController controller, int port) {
+    public RemoteBle6LowpanControllerBroadcaster(Ble6LowpanController controller, int port) {
         this.controller = controller;
         this.port = port;
     }
@@ -26,7 +26,7 @@ public class RemoteBle6LowpanControllerService implements Ble6LowpanControllerSe
     public void start() {
         try {
             rmiRegistry = LocateRegistry.createRegistry(port);
-            rmiRegistry.bind(ControllerName, UnicastRemoteObject.exportObject(controller, 0));
+            rmiRegistry.rebind(ControllerName, UnicastRemoteObject.exportObject(controller, 0));
             logger.info("RMI Server ready");
         } catch (Exception e) {
             logger.error("RMI Server exception: " + e.getMessage());
