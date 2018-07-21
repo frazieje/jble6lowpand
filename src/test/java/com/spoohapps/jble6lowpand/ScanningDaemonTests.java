@@ -101,6 +101,11 @@ public class ScanningDaemonTests {
         public String getWhitelistPath() {
             return "some path";
         }
+
+        @Override
+        public DaemonConfig apply(DaemonConfig other) {
+            return null;
+        }
     }
 
 }

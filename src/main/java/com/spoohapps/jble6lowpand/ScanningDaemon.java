@@ -10,19 +10,16 @@ import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import com.spoohapps.jble6lowpand.tasks.BleIpspConnector;
 import com.spoohapps.jble6lowpand.tasks.BleIpspScanner;
-import org.apache.commons.daemon.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ScanningDaemon implements Daemon, Ble6LowpanController {
+public class ScanningDaemon implements Ble6LowpanController {
 	
 	private KnownDeviceRepository knownDevices;
 	private Ble6LowpanIpspService ble6LowpanIpspService;
@@ -61,16 +58,26 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
     }
 
     private void initialize(String[] args) {
-        InputStream configFileStream = null;
+
+        String configFilePath = null;
+        try {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].equals("-configFile")) {
+                    configFilePath = args[i + 1];
+                }
+            }
+        } catch (Exception ignored) {}
+
+        config = Config.fromDefaults();
 
         try {
-            Path path = Paths.get(new URI(System.getProperty("user.home") + "/jble6lowpand.conf"));
-            configFileStream = Files.newInputStream(path);
-        } catch (Exception e) {}
+            if (configFilePath != null) {
+                config = config.apply(Config.fromStream(
+                        Files.newInputStream(Paths.get(configFilePath))));
+            }
+        } catch (Exception ignored) {}
 
-        config = Config.fromDefaults()
-                .apply(Config.fromStream(configFileStream))
-                .apply(Config.fromArgs(args));
+        config = config.apply(Config.fromArgs(args));
 
         logger.info("Whitelist path: {}", config.getWhitelistPath());
         logger.info("Scan Duration: {}", config.getScanDurationMs());
@@ -88,13 +95,6 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
         controllerService = new RemoteBle6LowpanControllerBroadcaster(this, config.getControllerPort());
     }
 
-	@Override
-	public void init(DaemonContext context) throws DaemonInitException {
-        logger.info("Initializing...");
-        initialize(context.getArguments());
-	}
-
-	@Override
 	public void stop() throws InterruptedException {
         logger.info("Stopping...");
         scanningExecutorService.shutdown();
@@ -116,11 +116,6 @@ public class ScanningDaemon implements Daemon, Ble6LowpanController {
         logger.info("Stopped");
 	}
 
-	@Override
-	public void destroy() {
-	}
-
-	@Override
 	public void start() {
         try {
             logger.info("Starting...");

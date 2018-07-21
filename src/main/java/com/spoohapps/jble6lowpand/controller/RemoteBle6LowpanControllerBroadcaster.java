@@ -1,44 +1,52 @@
 package com.spoohapps.jble6lowpand.controller;
 
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
+import java.net.URI;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RemoteBle6LowpanControllerBroadcaster implements Ble6LowpanControllerBroadcaster {
 
-    private final Ble6LowpanController controller;
-
-    private Registry rmiRegistry;
-    private final int port;
-
-    public static final String ControllerName = "jble6lowpand";
+    private final HttpServer httpServer;
 
     private final Logger logger = LoggerFactory.getLogger(RemoteBle6LowpanControllerBroadcaster.class);
 
     public RemoteBle6LowpanControllerBroadcaster(Ble6LowpanController controller, int port) {
-        this.controller = controller;
-        this.port = port;
+        URI baseUri = UriBuilder.fromPath("/").host("0.0.0.0").port(port).build();
+
+        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+
+        ResourceConfig config =
+                new ResourceConfig()
+                        .register(new ControllerHK2Binder(controller))
+                        .packages("com.spoohapps.jble6lowpand.controller.api");
+
+        httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, config, locator);
     }
 
     public void start() {
+        logger.info("Starting HTTP Server...");
         try {
-            rmiRegistry = LocateRegistry.createRegistry(port);
-            rmiRegistry.rebind(ControllerName, UnicastRemoteObject.exportObject(controller, 0));
-            logger.info("RMI Server ready");
-        } catch (Exception e) {
-            logger.error("RMI Server exception: " + e.getMessage());
+            httpServer.start();
+            logger.info("HTTP Server Started...");
+        } catch (IOException e) {
+            logger.error("Error starting HTTP Server", e);
         }
     }
 
     public void stop() {
-        try {
-            rmiRegistry.unbind(ControllerName);
-            UnicastRemoteObject.unexportObject(controller, true);
-        } catch (Exception ex) {
-            logger.error("RMI server exception: " + ex.getMessage());
-        }
+        logger.info("Stopping HTTP Server...");
+        httpServer.shutdownNow();
+        logger.info("HTTP Server Stopped.");
     }
 }

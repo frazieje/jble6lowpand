@@ -6,4 +6,5 @@ public interface DaemonConfig {
     int getConnectTimeoutMs();
     int getControllerPort();
     String getWhitelistPath();
+    DaemonConfig apply(DaemonConfig other);
 }
