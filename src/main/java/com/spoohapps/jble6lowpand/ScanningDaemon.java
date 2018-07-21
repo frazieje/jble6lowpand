@@ -83,7 +83,7 @@ public class ScanningDaemon implements Ble6LowpanController {
         logger.info("Scan Duration: {}", config.getScanDurationMs());
         logger.info("Scan Timeout: {}", config.getScanTimeoutMs());
         logger.info("Connect Timeout: {}", config.getConnectTimeoutMs());
-        logger.info("RMI Port: {}", config.getControllerPort());
+        logger.info("Controller Port: {}", config.getControllerPort());
 
         Path knownDevicesFilePath = Paths.get(config.getWhitelistPath());
 

@@ -1,0 +1,8 @@
+version: "3"
+services:
+  ble6lowpand:
+    build: .
+    ports:
+      - 8080:8080
+    volumes:
+      - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf
