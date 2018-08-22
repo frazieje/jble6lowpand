@@ -1,5 +1,7 @@
 FROM resin/raspberry-pi-openjdk:8-jdk
 
+#RUN [ "cross-build-start" ]
+
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
 
 EXPOSE 8080
@@ -48,4 +50,6 @@ WORKDIR /app/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
-CMD bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
+CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
+
+#RUN [ "cross-build-end" ]

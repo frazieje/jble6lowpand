@@ -22,7 +22,10 @@ public class StatusResource {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Status getStatus() {
-        return new Status();
+        return new Status(
+                controller.getConfig(),
+                controller.getAvailableDevices(),
+                controller.getConnectedDevices(), controller.getKnownDevices());
     }
 
 }
