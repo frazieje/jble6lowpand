@@ -1,17 +1,8 @@
-FROM gradle:jdk8 as builder
-
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
-RUN gradle build -x test
-
-FROM resin/raspberry-pi-openjdk:8-jre
+FROM resin/raspberry-pi-openjdk:8-jdk
 
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
 
 EXPOSE 8080
-
-COPY --from=builder /home/gradle/src/build/distributions/jble6lowpand.tar /app/
-COPY ./jni /app/jni/
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -21,9 +12,30 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-dev \
     bluez \
     libbluetooth-dev \
+    wget \
+    unzip \
+    radvd \
     git \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt
+
+RUN wget https://downloads.gradle.org/distributions/gradle-2.6-bin.zip && \
+    unzip gradle-2.6-bin.zip && \
+    rm gradle-2.6-bin.zip
+
+ENV GRADLE_HOME /opt/gradle-2.6
+
+ENV PATH $PATH:$GRADLE_HOME/bin
+
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle build -x test
+
+RUN cp /home/gradle/src/build/distributions/jble6lowpand.tar /app/
+
+COPY ./jni /app/jni/
 
 #RUN cd /app/jni && make
 
