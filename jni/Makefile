@@ -5,12 +5,11 @@ export OUTPUT_FILENAME
 MAKEFILE_NAME := $(MAKEFILE_LIST)
 MAKEFILE_DIR := $(dir $(MAKEFILE_NAME) ) 
 
-GNU_INSTALL_ROOT := E:/SysGCC/Raspberry
-GNU_VERSION := 4.9.2
+GNU_INSTALL_ROOT := /usr
 GNU_PREFIX := arm-linux-gnueabihf
 
-JAVA_INCLUDE_PATH := "E:/SysGCC/Raspberry/arm-linux-gnueabihf/sysroot/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include"
-JAVA_LINUX_INCLUDE_PATH := "E:/SysGCC/Raspberry/arm-linux-gnueabihf/sysroot/usr/lib/jvm/jdk-8-oracle-arm32-vfp-hflt/include/linux"
+JAVA_INCLUDE_PATH := "$(JAVA_HOME)/include"
+JAVA_LINUX_INCLUDE_PATH := "$(JAVA_HOME)/include/linux"
 
 MK := mkdir
 RM := rm -rf
