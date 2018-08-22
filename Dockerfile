@@ -29,18 +29,18 @@ ENV GRADLE_HOME /opt/gradle-2.6
 ENV PATH $PATH:$GRADLE_HOME/bin
 
 COPY . /home/gradle/src
+
+WORKDIR /home/gradle/src/jni
+
+RUN make
+
 WORKDIR /home/gradle/src
+
 RUN gradle build -x test
 
 WORKDIR /
 RUN mkdir app
 RUN cp /home/gradle/src/build/distributions/jble6lowpand.tar app/
-
-COPY ./jni /app/jni/
-
-#RUN cd /app/jni && make
-
-#RUN cp /app/jni/libs/arm32/libble6lowpand.so /app/jnilibs
 
 WORKDIR /app
 RUN tar -xvf jble6lowpand.tar

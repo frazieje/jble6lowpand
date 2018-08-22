@@ -2,9 +2,8 @@ version: "3"
 services:
   jble6lowpand:
     build: .
-    ports:
-      - 8080:8080
     volumes:
       - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf
       - /sys/kernel/debug/bluetooth/6lowpan_control:/sys/kernel/debug/bluetooth/6lowpan_control
     network_mode: host
+    privileged: true
