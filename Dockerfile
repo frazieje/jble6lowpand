@@ -29,7 +29,7 @@ ENV GRADLE_HOME /opt/gradle-2.6
 
 ENV PATH $PATH:$GRADLE_HOME/bin
 
-COPY --chown=gradle:gradle . /home/gradle/src
+COPY . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build -x test
 
