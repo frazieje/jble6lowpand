@@ -6,3 +6,4 @@ services:
       - 8080:8080
     volumes:
       - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf
+    network_mode: host
