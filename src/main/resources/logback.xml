@@ -9,8 +9,7 @@
 
     <logger name="com.base22" level="TRACE"/>
 
-
-    <root level="debug">
+    <root level="trace">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

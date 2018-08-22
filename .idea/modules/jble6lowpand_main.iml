@@ -12,7 +12,6 @@
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.27" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.media:jersey-media-json-jackson:2.27" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.inject:jersey-hk2:2.27" level="project" />
-    <orderEntry type="library" name="Gradle: org.slf4j:slf4j-simple:1.7.25" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.2.3" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.core:jersey-server:2.27" level="project" />

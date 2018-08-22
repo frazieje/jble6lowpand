@@ -13,6 +13,8 @@ public class BTAddress implements Serializable {
 
     private transient BTAddressValidator btAddressValidator = new BTAddressValidatorImpl();
 
+    public BTAddress() {}
+
     public BTAddress(String address) {
 
         String addressStr = address.trim();
