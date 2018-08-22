@@ -33,7 +33,9 @@ COPY . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build -x test
 
-RUN cp /home/gradle/src/build/distributions/jble6lowpand.tar /app/
+WORKDIR /
+RUN mkdir app
+RUN cp /home/gradle/src/build/distributions/jble6lowpand.tar app/
 
 COPY ./jni /app/jni/
 
