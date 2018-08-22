@@ -1,6 +1,6 @@
 version: "3"
 services:
-  ble6lowpand:
+  jble6lowpand:
     build: .
     ports:
       - 8080:8080
