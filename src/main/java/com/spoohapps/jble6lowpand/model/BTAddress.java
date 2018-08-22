@@ -106,6 +106,14 @@ public class BTAddress implements Serializable {
         return byteArrayToHexString(data);
     }
 
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
     @Override
     public String toString() {
         String displayName = name != null && !name.equals("") ? name : "";

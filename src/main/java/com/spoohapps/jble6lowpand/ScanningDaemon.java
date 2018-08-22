@@ -172,5 +172,10 @@ public class ScanningDaemon implements Ble6LowpanController {
             logger.error("Can not remove device. Invalid bluetooth address.");
         }
     }
-	
+
+    @Override
+    public DaemonConfig getConfig() {
+        return config;
+    }
+
 }

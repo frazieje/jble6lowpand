@@ -1,13 +1,13 @@
 package com.spoohapps.jble6lowpand.controller.api;
 
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
+import com.spoohapps.jble6lowpand.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.Status;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/")
 public class StatusResource {
@@ -25,7 +25,26 @@ public class StatusResource {
         return new Status(
                 controller.getConfig(),
                 controller.getAvailableDevices(),
-                controller.getConnectedDevices(), controller.getKnownDevices());
+                controller.getConnectedDevices(),
+                controller.getKnownDevices());
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("known")
+    public Response postKnownAddress(BTAddress address)
+    {
+        controller.addKnownDevice(address);
+        return Response.accepted().build();
+    }
+
+    @DELETE
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Path("known")
+    public Response deleteKnownAddress(BTAddress address)
+    {
+        controller.removeKnownDevice(address);
+        return Response.accepted().build();
     }
 
 }
