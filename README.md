@@ -90,6 +90,7 @@ $ tar -xvf jble6lowpand.tar
 Configure the application:
 ``` bash
 $ cd /opt/jble6lowpand
+$ ln /sys/kernel/debug/bluetooth/6lowpan_control bin/6lowpan_control
 $ echo "whitelistPath=/opt/jble6lowpand/knowndevices.conf" > "jble6lowpand.conf"
 $ echo "controllerPort=8080" >> "jble6lowpand.conf"
 ```
