@@ -49,7 +49,7 @@ WORKDIR /app/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
-CMD systemctl start radvd && \
+CMD /usr/sbin/radvd && \
     hciconfig hci0 reset && \
     bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
 
