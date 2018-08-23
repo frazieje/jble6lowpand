@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=javabuilder /home/gradle/src/build/distributions/jble6lowpanshoveld.tar /app/
+COPY --from=javabuilder /home/gradle/src/build/distributions/jble6lowpand.tar /app/
 
 COPY ./jni /app/jni
 
@@ -47,6 +47,8 @@ WORKDIR /app/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
-CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
+CMD systemctl radvd start && \
+    hciconfig hci0 reset && \
+    bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
 
 #RUN [ "cross-build-end" ]
