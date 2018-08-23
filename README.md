@@ -74,7 +74,13 @@ $ cd ~/jble6lowpand/jni
 $ make
 ```
 
-Build and install the application:
+Build the application using gradle:
+``` bash
+$ cd ~/jble6lowpand
+$ ./gradlew build
+```
+
+Install the application:
 ``` bash
 $ cp build/distributions/jble6lowpand.tar /opt/
 $ cd /opt
