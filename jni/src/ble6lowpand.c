@@ -34,7 +34,7 @@
 #define DEVICE_NAME_LEN           30
 #define DEVICE_ADDR_LEN           18
 
-#define CONTROLLER_PATH           "/app/jble6lowpand/6lowpan_control"
+#define CONTROLLER_PATH           "/opt/jble6lowpand/bin/6lowpan_control"
 
 static int dev_id = -1;
 

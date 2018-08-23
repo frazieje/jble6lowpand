@@ -28,23 +28,23 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=javabuilder /home/gradle/src/build/distributions/jble6lowpand.tar /app/
+COPY --from=javabuilder /home/gradle/src/build/distributions/jble6lowpand.tar /opt/
 
-COPY ./jni /app/jni
+WORKDIR /opt
 
-WORKDIR /app/jni
+RUN tar -xvf jble6lowpand.tar
+
+COPY ./jni /opt/jble6lowpand/jni
+
+WORKDIR /opt/jble6lowpand/jni
 
 RUN mkdir libs
 
 RUN make
 
-WORKDIR /app
+RUN cp /opt/jble6lowpand/jni/libs/libble6lowpand.so /app/jble6lowpand/
 
-RUN tar -xvf jble6lowpand.tar
-
-RUN cp /app/jni/libs/libble6lowpand.so /app/jble6lowpand/
-
-WORKDIR /app/jble6lowpand
+WORKDIR /opt/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
