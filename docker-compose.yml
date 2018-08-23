@@ -4,7 +4,6 @@ services:
     build: .
     volumes:
       - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf
-      - ./conf/radvd/radvd.conf:/etc/radvd.conf
       - /sys/kernel/debug/bluetooth/6lowpan_control:/app/jble6lowpand/6lowpan_control
     network_mode: host
     privileged: true

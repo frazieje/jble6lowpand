@@ -25,7 +25,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     git \
-    radvd \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
@@ -49,10 +48,6 @@ WORKDIR /app/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
-COPY ./entrypoint.sh /app/jble6lowpand/entrypoint.sh
-
-RUN chmod 777 /app/jble6lowpand/entrypoint.sh
-
-ENTRYPOINT ["/app/jble6lowpand/entrypoint.sh"]
+CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
 
 #RUN [ "cross-build-end" ]
