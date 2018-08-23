@@ -4,6 +4,7 @@ services:
     build: .
     volumes:
       - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf
+      - ./conf/knowndevices.conf:/app/jble6lowpand/knowndevices.conf
       - /sys/kernel/debug/bluetooth/6lowpan_control:/app/jble6lowpand/6lowpan_control
     network_mode: host
     privileged: true
