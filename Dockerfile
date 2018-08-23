@@ -51,7 +51,7 @@ ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
 COPY ./entrypoint.sh /app/jble6lowpand/entrypoint.sh
 
-RUN chmod 777 /app/jble6lowpand/etrypoint.sh
+RUN chmod 777 /app/jble6lowpand/entrypoint.sh
 
 ENTRYPOINT /app/jble6lowpand/entrypoint.sh
 
