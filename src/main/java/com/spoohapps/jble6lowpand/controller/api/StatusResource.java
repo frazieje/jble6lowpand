@@ -31,19 +31,42 @@ public class StatusResource {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
-    @Path("known")
-    public Response postKnownAddress(BTAddress address)
+    @Path("{id}")
+    public Response postKnownAddress(@PathParam("id") String id, BTAddress address)
     {
-        controller.addKnownDevice(address);
+        BTAddress newAddress;
+
+        try {
+            newAddress = new BTAddress(id);
+        } catch (IllegalArgumentException e) {
+            return Response.status(400, e.getMessage()).build();
+        }
+
+        if (!newAddress.equals(address)) {
+            return Response.status(400, "Payload address does not match resource target").build();
+        }
+
+        newAddress.setName(address.getName());
+
+        controller.addKnownDevice(newAddress);
+
         return Response.accepted().build();
     }
 
     @DELETE
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Path("known")
-    public Response deleteKnownAddress(BTAddress address)
+    @Path("{id}")
+    public Response deleteKnownAddress(@PathParam("id") String id)
     {
+        BTAddress address;
+
+        try {
+            address = new BTAddress(id);
+        } catch (IllegalArgumentException e) {
+            return Response.status(400, e.getMessage()).build();
+        }
+
         controller.removeKnownDevice(address);
+
         return Response.accepted().build();
     }
 
