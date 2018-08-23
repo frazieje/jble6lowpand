@@ -5,7 +5,7 @@ The application implements functionality to scan for and connect to bluetooth lo
 
 This application uses jni for communication with the bluetooth hardware. It uses the bluetooth protocol stack for linux (bluez) and the bluetooth_6lowpan kernel module to maintain a 6lowpan over bluetooth low-energy. For this reason the daemon is currently only supported on linux.
 
-The application exposes a REST to allow for communication and control by other java processes, such as a command line interface or an application server.
+The application exposes a REST API to allow for communication and control.
 
 The application uses the gradle application plugin for ease of installation / distribution.
 
