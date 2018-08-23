@@ -43,4 +43,4 @@ INC_PATHS += -I$(abspath external/bluez/lib)
 INC_PATHS += -I$(abspath external/bluez/src/shared)
 
 all:
-	$(CC) -o libs/arm32/libble6lowpand.so -lc -shared -fPIC $(INC_PATHS) $(C_SOURCE_FILES) 
+	$(CC) -o libs/libble6lowpand.so -lc -shared -fPIC $(INC_PATHS) $(C_SOURCE_FILES)

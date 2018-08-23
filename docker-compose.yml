@@ -1,6 +1,6 @@
 version: "3"
 services:
-  jble6lowpand:
+  scanner:
     build: .
     volumes:
       - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf

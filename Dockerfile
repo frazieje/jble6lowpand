@@ -1,3 +1,11 @@
+FROM gradle:jdk8 as javabuilder
+
+COPY --chown=gradle:gradle . /home/gradle/src
+
+WORKDIR /home/gradle/src
+
+RUN gradle build -x test
+
 FROM resin/raspberry-pi-openjdk:8-jdk
 
 #RUN [ "cross-build-start" ]
@@ -17,35 +25,24 @@ RUN apt-get update && apt-get install -y \
     wget \
     unzip \
     git \
+    radvd \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt
+COPY --from=javabuilder /home/gradle/src/build/distributions/jble6lowpanshoveld.tar /app/
 
-RUN wget https://downloads.gradle.org/distributions/gradle-2.6-bin.zip && \
-    unzip gradle-2.6-bin.zip && \
-    rm gradle-2.6-bin.zip
+COPY ./jni /app/jni
 
-ENV GRADLE_HOME /opt/gradle-2.6
-
-ENV PATH $PATH:$GRADLE_HOME/bin
-
-COPY . /home/gradle/src
-
-WORKDIR /home/gradle/src/jni
+WORKDIR /app/jni
 
 RUN make
 
-WORKDIR /home/gradle/src
-
-RUN gradle build -x test
-
-WORKDIR /
-RUN mkdir app
-RUN cp /home/gradle/src/build/distributions/jble6lowpand.tar app/
-
 WORKDIR /app
+
 RUN tar -xvf jble6lowpand.tar
+
+RUN cp /app/jni/libs/libble6lowpand.so /app/jble6lowpand/
+
 WORKDIR /app/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
