@@ -23,7 +23,7 @@ repositories {
 distributions {
     main {
         contents {
-            from { 'jni/libs/arm32' }
+            from { 'jni/libs' }
         }
     }
 }

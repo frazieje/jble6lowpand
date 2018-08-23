@@ -42,12 +42,12 @@ RUN mkdir libs
 
 RUN make
 
-RUN cp /opt/jble6lowpand/jni/libs/libble6lowpand.so /app/jble6lowpand/
+RUN cp /opt/jble6lowpand/jni/libs/libble6lowpand.so /opt/jble6lowpand/
 
 WORKDIR /opt/jble6lowpand
 
 ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
 
-CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
+CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
 
 #RUN [ "cross-build-end" ]

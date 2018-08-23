@@ -3,7 +3,7 @@ services:
   scanner:
     build: .
     volumes:
-      - ./conf/jble6lowpand.conf:/app/jble6lowpand/jble6lowpand.conf
+      - ./conf/jble6lowpand.conf:/opt/jble6lowpand/jble6lowpand.conf
       - /sys/kernel/debug/bluetooth/6lowpan_control:/opt/jble6lowpand/bin/6lowpan_control
     network_mode: host
     privileged: true
