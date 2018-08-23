@@ -53,10 +53,8 @@ COPY ./entrypoint.sh /app/jble6lowpand/entrypoint.sh
 
 RUN chmod 777 /app/jble6lowpand/entrypoint.sh
 
-ENTRYPOINT /app/jble6lowpand/entrypoint.sh
+ENTRYPOINT ["/app/jble6lowpand/entrypoint.sh"]
 
-CMD /usr/sbin/radvd && \
-    hciconfig hci0 reset && \
-    bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
+CMD ["bin/jble6lowpand", "-configFile", "/app/jble6lowpand/jble6lowpand.conf"]
 
 #RUN [ "cross-build-end" ]
