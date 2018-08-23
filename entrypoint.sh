@@ -10,5 +10,10 @@ trap gracefulshutdown SIGINT
 
 hciconfig hci0 reset
 
-exec "$@" &
-wait
+bin/jble6lowpand -configFile /app/jble6lowpand/jble6lowpand.conf
+
+read
+
+kill $(cat /var/run/radvd.pid)
+
+pkill jble6lowpand

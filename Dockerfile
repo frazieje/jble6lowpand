@@ -55,6 +55,4 @@ RUN chmod 777 /app/jble6lowpand/entrypoint.sh
 
 ENTRYPOINT ["/app/jble6lowpand/entrypoint.sh"]
 
-CMD ["bin/jble6lowpand", "-configFile", "/app/jble6lowpand/jble6lowpand.conf"]
-
 #RUN [ "cross-build-end" ]
