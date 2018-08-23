@@ -12,30 +12,69 @@ The application uses the gradle application plugin for ease of installation / di
 ### Whitelist
 To determine which devices to connect, the application uses a file-based whitelist. The location of the whitelist is configurable.
 
-## Using the daemon
+## Getting Started
 ### Prerequesites
 Before the application can be used, you need a linux machine with access to bluetooth hardware, and with support for the bluetooth_6lowpan kernel module.
-### Getting started
-
-Install bluez:
-``` bash
-$ sudo apt-get install bluez
-```
 
 Enable the kernel module:
 ``` bash
 $ sudo modprobe bluetooth_6lowpan
 ```
 
-Clone the repository and use gradle to build the application: 
+### Getting Started Using Docker
+You can use docker (and docker-compose if necessary) to easily build and run this application.
+
+Clone the repository
 ``` bash
 $ cd ~
 $ git clone git@github.com:frazieje/jble6lowpand.git
-$ cd jble6lowpand
-$ gradle build
 ```
 
-Install the application:
+Initialize the bluez submodule
+``` bash
+$ cd ~/jble6lowpand
+$ git submodule update --init --recursive
+```
+
+Build docker image
+``` bash
+$ cd ~/jble6lowpand
+$ sudo docker-compose build
+```
+
+Run the application:
+``` bash
+$ cd ~/jble6lowpand
+$ sudo docker-compose up
+```
+
+### Getting Started Running Standalone (without Docker)
+To run the application in standalone you will need to install some prerequisites and build the native components
+
+Install gcc and bluez:
+``` bash
+$ sudo apt-get install gcc bluez
+```
+
+Clone the repository: 
+``` bash
+$ cd ~
+$ git clone git@github.com:frazieje/jble6lowpand.git
+```
+
+Initialize the bluez submodule
+``` bash
+$ cd ~/jble6lowpand
+$ git submodule update --init --recursive
+```
+
+Build the native components:
+``` bash
+$ cd ~/jble6lowpand/jni
+$ make
+```
+
+Build and install the application:
 ``` bash
 $ cp build/distributions/jble6lowpand.tar /opt/
 $ cd /opt
@@ -54,6 +93,8 @@ Run the application:
 $ cd /opt/jble6lowpand
 $ bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
 ```
+
+## Using the Application
 
 Check the application status:
 ``` bash
