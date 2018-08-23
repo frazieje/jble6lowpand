@@ -35,6 +35,8 @@ COPY ./jni /app/jni
 
 WORKDIR /app/jni
 
+RUN mkdir libs
+
 RUN make
 
 WORKDIR /app
