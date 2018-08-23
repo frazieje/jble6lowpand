@@ -95,7 +95,7 @@ public class ScanningDaemon implements Ble6LowpanController {
         controllerService = new RemoteBle6LowpanControllerBroadcaster(this, config.getControllerPort());
     }
 
-	public void stop() throws InterruptedException {
+	public void stop() {
         logger.info("Stopping...");
         scanningExecutorService.shutdown();
         try {
@@ -131,6 +131,9 @@ public class ScanningDaemon implements Ble6LowpanController {
                     config.getScanDurationMs(),
                     config.getConnectTimeoutMs(),
                     TimeUnit.MILLISECONDS);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
+
             logger.info("Running...");
         } catch (Exception e) {
             logger.error(e.getMessage());
