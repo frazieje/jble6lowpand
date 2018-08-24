@@ -13,7 +13,7 @@ The application uses the gradle application plugin for ease of installation / di
 To determine which devices to connect, the application uses a file-based whitelist. The location of the whitelist is configurable.
 
 ## Getting Started
-### Prerequesites
+### Prerequisites
 Before the application can be used, you need a linux machine with access to bluetooth hardware, and with support for the bluetooth_6lowpan kernel module.
 
 [Provision a Raspberry Pi for use with jble6lowpand](https://github.com/frazieje/jble6lowpand/wiki/Provisioning-Raspberry-Pi-for-use-with-jble6lowpand)
