@@ -11,7 +11,7 @@ public interface Ble6LowpanController {
     Set<BTAddress> getConnectedDevices();
     Set<BTAddress> getAvailableDevices();
     Set<BTAddress> getKnownDevices();
-    void addKnownDevice(BTAddress address);
-    void removeKnownDevice(BTAddress address);
+    boolean addKnownDevice(BTAddress address);
+    boolean removeKnownDevice(BTAddress address);
     DaemonConfig getConfig();
 }

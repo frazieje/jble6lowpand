@@ -159,20 +159,22 @@ public class ScanningDaemon implements Ble6LowpanController {
     }
 
     @Override
-    public void addKnownDevice(BTAddress address) {
+    public boolean addKnownDevice(BTAddress address) {
         try {
-            knownDevices.add(address);
+            return knownDevices.add(address);
         } catch (IllegalArgumentException iae) {
             logger.error("Can not add device. Invalid bluetooth address.");
+            return false;
         }
     }
 
     @Override
-    public void removeKnownDevice(BTAddress address) {
+    public boolean removeKnownDevice(BTAddress address) {
         try {
-            knownDevices.remove(address);
+            return knownDevices.remove(address);
         } catch (IllegalArgumentException iae) {
             logger.error("Can not remove device. Invalid bluetooth address.");
+            return false;
         }
     }
 

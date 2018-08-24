@@ -29,10 +29,10 @@ public class StatusResource {
                 controller.getKnownDevices());
     }
 
-    @POST
+    @PUT
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("{id}")
-    public Response postKnownAddress(@PathParam("id") String id, BTAddress address)
+    public Response putKnownAddress(@PathParam("id") String id, BTAddress address)
     {
         BTAddress newAddress;
 
@@ -42,15 +42,17 @@ public class StatusResource {
             return Response.status(400, e.getMessage()).build();
         }
 
-        if (!newAddress.equals(address)) {
-            return Response.status(400, "Payload address does not match resource target").build();
-        }
-
         newAddress.setName(address.getName());
 
-        controller.addKnownDevice(newAddress);
+        if (controller.addKnownDevice(newAddress)) {
+            return Response.noContent().build();
+        } else if (controller.removeKnownDevice(newAddress)) {
+            if (controller.addKnownDevice(newAddress)) {
+                return Response.noContent().build();
+            }
+        }
 
-        return Response.accepted().build();
+        return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @DELETE
@@ -65,9 +67,10 @@ public class StatusResource {
             return Response.status(400, e.getMessage()).build();
         }
 
-        controller.removeKnownDevice(address);
+        if (controller.removeKnownDevice(address))
+            return Response.noContent().build();
 
-        return Response.accepted().build();
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
 }

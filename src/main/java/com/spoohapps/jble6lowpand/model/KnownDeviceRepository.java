@@ -4,8 +4,8 @@ import java.util.Set;
 
 public interface KnownDeviceRepository {
 	boolean contains(BTAddress address);
-	void add(BTAddress address);
-	void remove(BTAddress address);
+	boolean add(BTAddress address);
+	boolean remove(BTAddress address);
 
 	void startWatcher();
 	void stopWatcher();
