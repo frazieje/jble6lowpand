@@ -12,8 +12,28 @@ public class BTAddressTests {
 
         BTAddress address = new BTAddress(addressString);
 
-        assertTrue(address.toString().toLowerCase().equals(addressString));
+        assertEquals(address.toString().toLowerCase(), addressString);
 
+    }
+
+    @Test
+    public void shouldConstructFromHyphenatedValidAddressString() {
+
+        String addressString = "78-4f-43-62-6f-58";
+
+        BTAddress address = new BTAddress(addressString);
+
+        assertNotNull(address);
+    }
+
+    @Test
+    public void shouldConstructFromCollapsedAddressString() {
+
+        String addressString = "784f43626f58";
+
+        BTAddress address = new BTAddress(addressString);
+
+        assertEquals("78:4F:43:62:6F:58", address.toString());
     }
 
     @Test
@@ -34,7 +54,7 @@ public class BTAddressTests {
 
         BTAddress address = new BTAddress(new byte[] { 120,79,67,98,111,88 });
 
-        assertTrue(address.toString().toLowerCase().equals(addressString));
+        assertEquals(address.toString().toLowerCase(), addressString);
 
     }
 
