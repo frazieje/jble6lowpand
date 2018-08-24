@@ -21,11 +21,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
     private final Logger logger = LoggerFactory.getLogger(FileBasedKnownDeviceRepository.class);
 
-    public FileBasedKnownDeviceRepository() {
-        this(Paths.get(System.getProperty("user.home"),"whitelist.conf"));
-    }
-	
-	public FileBasedKnownDeviceRepository(Path filePath) {
+    public FileBasedKnownDeviceRepository(Path filePath) {
 		this.watcher = new WhitelistFileWatcher(filePath, this::onFileChanged);
 		this.filePath = filePath;
 		knownDevices = new CopyOnWriteArraySet<>();

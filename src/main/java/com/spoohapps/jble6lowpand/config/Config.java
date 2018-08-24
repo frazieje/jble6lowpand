@@ -14,13 +14,12 @@ public class Config implements DaemonConfig {
     private static final List<String> whitelistPathKeys = Arrays.asList("whitelistPath", "w");
     private static final List<String> controllerPortKeys = Arrays.asList("controllerPort", "p");
 
-    private static final int defaultScanDurationMs = 5000;
-    private static final int defaultTimeBetweenScansMs = 5000;
-    private static final int defaultTimeBetweenConnectionAttemptsMs = 3000;
+    private static final int defaultScanDurationMs = 3000;
+    private static final int defaultTimeBetweenScansMs = 2000;
+    private static final int defaultTimeBetweenConnectionAttemptsMs = 1000;
+    private static final int defaultControllerPort = 8080;
 
-    private static final int defaultControllerPort = 1099;
-
-    private static final String defaultWhitelistPath = "./knowndevices.conf";
+    private static final String defaultWhitelistPath = "/opt/jble6lowpand/data/knowndevices.conf";
 
     private static final Set<String> allKeys =
             Stream.of(durationKeys, scanTimeoutKeys, connectTimeoutKeys, whitelistPathKeys, controllerPortKeys)
