@@ -16,7 +16,9 @@ To determine which devices to connect, the application uses a file-based whiteli
 ### Prerequesites
 Before the application can be used, you need a linux machine with access to bluetooth hardware, and with support for the bluetooth_6lowpan kernel module.
 
-Enable the kernel module:
+[Provision a Raspberry Pi for use with jble6lowpand](https://github.com/frazieje/jble6lowpand/wiki/Provisioning-Raspberry-Pi-for-use-with-jble6lowpand)
+
+Or to just enable the kernel module on a linux install:
 ``` bash
 $ sudo modprobe bluetooth_6lowpan
 ```
