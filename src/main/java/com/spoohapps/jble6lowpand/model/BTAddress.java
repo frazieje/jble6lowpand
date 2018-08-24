@@ -127,6 +127,7 @@ public class BTAddress implements Serializable {
         BTAddress otherAddress = (BTAddress)other;
         if (other == null)
             return false;
+
         return Arrays.equals(data, otherAddress.data);
     }
 

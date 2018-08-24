@@ -6,6 +6,7 @@ public interface KnownDeviceRepository {
 	boolean contains(BTAddress address);
 	boolean add(BTAddress address);
 	boolean remove(BTAddress address);
+	boolean update(BTAddress address);
 
 	void startWatcher();
 	void stopWatcher();

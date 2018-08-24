@@ -73,7 +73,18 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
         return removed;
 	}
 
-	@Override
+    @Override
+    public boolean update(BTAddress address) {
+        Set<BTAddress> copy = getStoredAddresses();
+        if (copy.remove(address)) {
+            copy.add(address);
+            setStoredAddresses(copy);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
 	public void clear() {
         setStoredAddresses(new HashSet<>());
 	}

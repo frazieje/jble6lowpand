@@ -46,10 +46,8 @@ public class StatusResource {
 
         if (controller.addKnownDevice(newAddress)) {
             return Response.noContent().build();
-        } else if (controller.removeKnownDevice(newAddress)) {
-            if (controller.addKnownDevice(newAddress)) {
-                return Response.noContent().build();
-            }
+        } else if (controller.updateKnownDevice(newAddress)) {
+            return Response.noContent().build();
         }
 
         return Response.status(Response.Status.BAD_REQUEST).build();
