@@ -65,28 +65,4 @@ task generateJniHeaders(type: Exec) {
     dependsOn classes
 }
 
-task generateInitScript(type: Copy) {
-    doFirst {
-        if (!System.env.'JAVA_HOME'?.trim()) {
-            throw new GradleException("JAVA_HOME is not set. Please set JAVA_HOME and try again")
-        }
-    }
-    def template_vars = [install_path: "$projectDir",
-                         java_home: System.env.'JAVA_HOME'?.trim()]
-    def tag = /<%.*%>/
-    from "$projectDir/init.template"
-    into "$buildDir/output/init"
-    rename { file -> "jble6lowpand" }
-    filter { line ->
-        def sb = new StringBuffer()
-        def matches = (line =~ /$tag/)
-        def i = 0
-        while (matches.find()) {
-            matches.appendReplacement(sb, template_vars.get(matches[i].substring(2, matches[i].length()-2).trim()))
-        }
-        matches.appendTail(sb)
-        return sb.toString()
-    }             
-}
-
 build.dependsOn(copyToLib)
