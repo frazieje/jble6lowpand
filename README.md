@@ -114,7 +114,7 @@ Add a bluetooth device to the whitelist:
 ``` bash
 $ curl -H "Content-Type: application/json" \
   -X POST \
-  -d '{"name":"DEVICE1","data":"AKq7zN3u"}' \
+  -d '{"name":"DEVICE1"}' \
   localhost:8080/00-AA-BB-CC-DD-EE
 ```
 
