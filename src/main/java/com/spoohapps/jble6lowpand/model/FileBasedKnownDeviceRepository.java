@@ -17,7 +17,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	private final WhitelistFileWatcher watcher;
 	private final Path filePath;
 
-	private final Set<BTAddress> knownDevices;
+	private Set<BTAddress> knownDevices;
 
     private final Logger logger = LoggerFactory.getLogger(FileBasedKnownDeviceRepository.class);
 
@@ -47,9 +47,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
     private synchronized void onFileChanged() {
         logger.trace("known devices file changed");
-        Set<BTAddress> whitelistedAddresses = getStoredAddresses();
-        knownDevices.retainAll(whitelistedAddresses);
-        knownDevices.addAll(whitelistedAddresses);
+        knownDevices = new CopyOnWriteArraySet<>(getStoredAddresses());
     }
 
 	@Override
