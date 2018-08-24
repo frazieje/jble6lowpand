@@ -60,17 +60,21 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	@Override
 	public boolean add(BTAddress address) {
         Set<BTAddress> copy = getStoredAddresses();
-        boolean added = copy.add(address);
-        setStoredAddresses(copy);
-        return added;
+        if (copy.add(address)) {
+            setStoredAddresses(copy);
+            return true;
+        }
+        return false;
 	}
 
 	@Override
 	public boolean remove(BTAddress address) {
         Set<BTAddress> copy = getStoredAddresses();
-        boolean removed = copy.remove(address);
-        setStoredAddresses(copy);
-        return removed;
+        if (copy.remove(address)) {
+            setStoredAddresses(copy);
+            return true;
+        }
+        return false;
 	}
 
     @Override

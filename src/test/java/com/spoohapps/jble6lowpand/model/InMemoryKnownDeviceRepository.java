@@ -1,8 +1,5 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.jble6lowpand.model.BTAddress;
-import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,13 +23,21 @@ public class InMemoryKnownDeviceRepository implements KnownDeviceRepository {
     }
 
     @Override
-    public void add(BTAddress address) {
-        knownDevices.add(address);
+    public boolean add(BTAddress address) {
+        return knownDevices.add(address);
     }
 
     @Override
-    public void remove(BTAddress address) {
-        knownDevices.remove(address);
+    public boolean remove(BTAddress address) {
+        return knownDevices.remove(address);
+    }
+
+    @Override
+    public boolean update(BTAddress address) {
+        if (knownDevices.remove(address)) {
+            return knownDevices.add(address);
+        }
+        return false;
     }
 
     @Override

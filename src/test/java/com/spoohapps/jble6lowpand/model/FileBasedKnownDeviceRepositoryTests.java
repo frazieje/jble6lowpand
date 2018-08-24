@@ -73,21 +73,21 @@ public class FileBasedKnownDeviceRepositoryTests {
     }
 
     @Test
-    public void ShouldSaveAddedAddressesToFile() {
+    public void shouldSaveAddedAddressesToFile() {
         BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }
 
     @Test
-    public void ShouldSaveAddedAddressesWithNamesToFile() {
+    public void shouldSaveAddedAddressesWithNamesToFile() {
         BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF testName");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }
 
     @Test
-    public void ShouldRemoveRemovedAddressesFromFile() {
+    public void shouldRemoveRemovedAddressesFromFile() {
         BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
         knownDevices.add(address);
         knownDevices.remove(address);
@@ -95,7 +95,27 @@ public class FileBasedKnownDeviceRepositoryTests {
     }
 
     @Test
-    public void ShouldWatchForFileChanges() {
+    public void shouldNotAddExistingDevice() {
+        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF TEST");
+        knownDevices.add(address);
+        BTAddress address2 = new BTAddress("00:AA:BB:CC:DD:FF testName");
+        knownDevices.add(address2);
+        assertFalse(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
+    }
+
+    @Test
+    public void shouldUpdateExistingDevice() {
+        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF TEST");
+        knownDevices.add(address);
+        BTAddress address2 = new BTAddress("00:AA:BB:CC:DD:FF testName");
+        knownDevices.update(address2);
+        assertEquals(1, getFileContents().size());
+        assertTrue(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
+    }
+
+
+    @Test
+    public void shouldWatchForFileChanges() {
         sleep(1000);
         BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
         Set<BTAddress> addAddresses = new HashSet<>();
