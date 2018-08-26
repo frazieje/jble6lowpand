@@ -87,13 +87,16 @@ Install the application:
 $ cp build/distributions/jble6lowpand.tar /opt/
 $ cd /opt
 $ tar -xvf jble6lowpand.tar
+$ rm jble6lowpand.tar
+$ cd jble6lowpand
+$ cp libble6lowpand.so /usr/lib/
+$ ln /sys/kernel/debug/bluetooth/6lowpan_control bin/6lowpan_control
 ```
 
 Configure the application:
 ``` bash
 $ cd /opt/jble6lowpand
-$ ln /sys/kernel/debug/bluetooth/6lowpan_control bin/6lowpan_control
-$ echo "whitelistPath=/opt/jble6lowpand/knowndevices.conf" > "jble6lowpand.conf"
+$ echo "whitelistPath=/opt/jble6lowpand/data/knowndevices.conf" > "jble6lowpand.conf"
 $ echo "controllerPort=8080" >> "jble6lowpand.conf"
 ```
 
