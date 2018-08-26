@@ -72,18 +72,21 @@ public class StatusResource {
     }
 
     @GET
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("known")
     public Response getKnownAddresses() {
         return Response.ok().entity(controller.getKnownDevices()).build();
     }
 
     @GET
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("available")
     public Response getAvailableAddresses() {
         return Response.ok().entity(controller.getAvailableDevices()).build();
     }
 
     @GET
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("connected")
     public Response  getConnectedDevices() {
         return Response.ok().entity(controller.getConnectedDevices()).build();
