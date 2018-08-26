@@ -2,7 +2,6 @@ package com.spoohapps.jble6lowpand.model;
 
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
