@@ -10,8 +10,6 @@ FROM resin/raspberry-pi-openjdk:8-jdk
 
 #RUN [ "cross-build-start" ]
 
-ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
-
 EXPOSE 8080
 
 # Install dependencies
@@ -34,6 +32,8 @@ WORKDIR /opt
 
 RUN tar -xvf jble6lowpand.tar
 
+RUN rm jble6lowpand.tar
+
 COPY ./jni /opt/jble6lowpand/jni
 
 WORKDIR /opt/jble6lowpand/jni
@@ -42,11 +42,11 @@ RUN mkdir libs
 
 RUN make
 
-RUN cp /opt/jble6lowpand/jni/libs/libble6lowpand.so /opt/jble6lowpand/
+RUN cp /opt/jble6lowpand/jni/libs/libble6lowpand.so /usr/lib/
 
 WORKDIR /opt/jble6lowpand
 
-ENV LD_LIBRARY_PATH /app/jble6lowpand:${LD_LIBRARY_PATH}
+RUN rm -rf jni/
 
 CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
 

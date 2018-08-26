@@ -71,4 +71,22 @@ public class StatusResource {
         return Response.status(Response.Status.NOT_FOUND).build();
     }
 
+    @GET
+    @Path("known")
+    public Response getKnownAddresses() {
+        return Response.ok().entity(controller.getKnownDevices()).build();
+    }
+
+    @GET
+    @Path("available")
+    public Response getAvailableAddresses() {
+        return Response.ok().entity(controller.getAvailableDevices()).build();
+    }
+
+    @GET
+    @Path("connected")
+    public Response  getConnectedDevices() {
+        return Response.ok().entity(controller.getConnectedDevices()).build();
+    }
+
 }
