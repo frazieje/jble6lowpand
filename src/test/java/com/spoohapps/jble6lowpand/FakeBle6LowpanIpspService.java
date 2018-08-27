@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand;
 
-import com.spoohapps.jble6lowpand.model.BTAddress;
+import com.spoohapps.farcommon.model.BTAddress;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;

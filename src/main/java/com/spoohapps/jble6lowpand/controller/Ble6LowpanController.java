@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand.controller;
 
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
-import com.spoohapps.jble6lowpand.model.BTAddress;
+import com.spoohapps.farcommon.model.BTAddress;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

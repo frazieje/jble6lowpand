@@ -1,5 +1,7 @@
 package com.spoohapps.jble6lowpand.model;
 
+import com.spoohapps.farcommon.model.BTAddress;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;

@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand.controller.api;
 
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
-import com.spoohapps.jble6lowpand.model.BTAddress;
+import com.spoohapps.farcommon.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.Status;
 
 import javax.inject.Inject;

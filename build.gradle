@@ -18,6 +18,13 @@ buildscript {
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://www.spoohapps.com/artifactory/libs-release-local" //The Artifactory (preferably virtual) repository to resolve from
+        credentials {               //Optional resolver credentials (leave out to use anonymous resolution)
+            username = artifactory_username
+            password = artifactory_password
+        }
+    }
 }
 
 distributions {
@@ -37,6 +44,8 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    compile group: 'com.spoohapps', name: 'farcommon', version: '0.1.0'
 
     testCompile("junit:junit:4.12")
     testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
@@ -60,9 +69,12 @@ task copyToLib(type: Copy) {
 }
 
 task generateJniHeaders(type: Exec) {
-    def classpath = sourceSets.main.output.classesDir
+    def classpath = sourceSets.main.runtimeClasspath.asPath
+    print classpath
     commandLine "javah", "-d", "jni/src", "-classpath", classpath, "com.spoohapps.jble6lowpand.NativeBle6LowpanIpspService"
     dependsOn classes
 }
 
 build.dependsOn(copyToLib)
+
+jar.dependsOn(generateJniHeaders)

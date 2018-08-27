@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand.util;
 
-import com.spoohapps.jble6lowpand.util.BTAddressValidator;
-import com.spoohapps.jble6lowpand.util.BTAddressValidatorImpl;
+import com.spoohapps.farcommon.util.BTAddressValidator;
+import com.spoohapps.farcommon.util.BTAddressValidatorImpl;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

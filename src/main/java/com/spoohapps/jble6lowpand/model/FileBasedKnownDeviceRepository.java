@@ -1,5 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
+import com.spoohapps.farcommon.model.BTAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -5,7 +5,7 @@ import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
 import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerBroadcaster;
-import com.spoohapps.jble6lowpand.model.BTAddress;
+import com.spoohapps.farcommon.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import com.spoohapps.jble6lowpand.tasks.BleIpspConnector;

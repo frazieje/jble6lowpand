@@ -1,5 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
+import com.spoohapps.farcommon.model.BTAddress;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 
 import java.util.Set;

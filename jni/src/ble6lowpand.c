@@ -286,7 +286,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
     char names[MAX_BLE_CONN][DEVICE_NAME_LEN];
     int num = scan_ipsp_device(timeout, addresses, names);
 
-    jclass cls = (*env)->FindClass(env, "com/spoohapps/jble6lowpand/model/BTAddress");
+    jclass cls = (*env)->FindClass(env, "com/spoohapps/farcommon/model/BTAddress");
     ret = (jobjectArray)(*env)->NewObjectArray(env, num, cls, NULL);
     jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 

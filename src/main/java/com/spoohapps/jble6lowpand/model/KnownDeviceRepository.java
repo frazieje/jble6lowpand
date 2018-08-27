@@ -1,5 +1,7 @@
 package com.spoohapps.jble6lowpand.model;
 
+import com.spoohapps.farcommon.model.BTAddress;
+
 import java.util.Set;
 
 public interface KnownDeviceRepository {
