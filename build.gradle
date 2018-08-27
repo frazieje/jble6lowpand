@@ -70,7 +70,6 @@ task copyToLib(type: Copy) {
 
 task generateJniHeaders(type: Exec) {
     def classpath = sourceSets.main.runtimeClasspath.asPath
-    print classpath
     commandLine "javah", "-d", "jni/src", "-classpath", classpath, "com.spoohapps.jble6lowpand.NativeBle6LowpanIpspService"
     dependsOn classes
 }
