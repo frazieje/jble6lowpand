@@ -20,10 +20,6 @@ repositories {
     mavenCentral()
     maven {
         url "https://www.spoohapps.com/artifactory/libs-release-local" //The Artifactory (preferably virtual) repository to resolve from
-        credentials {               //Optional resolver credentials (leave out to use anonymous resolution)
-            username = artifactory_username
-            password = artifactory_password
-        }
     }
 }
 
