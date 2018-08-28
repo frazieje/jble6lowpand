@@ -10,7 +10,7 @@ FROM resin/raspberry-pi-openjdk:8-jdk
 
 #RUN [ "cross-build-start" ]
 
-EXPOSE 8080
+EXPOSE 8089
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \

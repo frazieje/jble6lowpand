@@ -17,7 +17,7 @@ public class Config implements DaemonConfig {
     private static final int defaultScanDurationMs = 3000;
     private static final int defaultTimeBetweenScansMs = 2000;
     private static final int defaultTimeBetweenConnectionAttemptsMs = 1000;
-    private static final int defaultControllerPort = 8080;
+    private static final int defaultControllerPort = 8089;
 
     private static final String defaultWhitelistPath = "/opt/jble6lowpand/data/knowndevices.conf";
 

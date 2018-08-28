@@ -19,7 +19,7 @@ buildscript {
 repositories {
     mavenCentral()
     maven {
-        url "https://www.spoohapps.com/artifactory/libs-release-local" //The Artifactory (preferably virtual) repository to resolve from
+        url "https://www.spoohapps.com/artifactory/libs-release-local"
     }
 }
 
