@@ -3,6 +3,8 @@ package com.spoohapps.jble6lowpand.controller;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainerProvider;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -19,16 +21,18 @@ public class RemoteBle6LowpanControllerBroadcaster implements Ble6LowpanControll
     private final Logger logger = LoggerFactory.getLogger(RemoteBle6LowpanControllerBroadcaster.class);
 
     public RemoteBle6LowpanControllerBroadcaster(Ble6LowpanController controller, int port) {
-        URI baseUri = UriBuilder.fromPath("/").host("0.0.0.0").port(port).build();
 
-        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        URI baseUri = UriBuilder.fromPath("/").host("0.0.0.0").port(port).build();
 
         ResourceConfig config =
                 new ResourceConfig()
                         .register(new ControllerHK2Binder(controller))
                         .packages("com.spoohapps.jble6lowpand.controller.api");
 
-        httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, config, locator);
+        GrizzlyHttpContainer httpContainer =
+                new GrizzlyHttpContainerProvider().createContainer(GrizzlyHttpContainer.class, config);
+
+        httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, httpContainer, false, null, false);
     }
 
     public void start() {
