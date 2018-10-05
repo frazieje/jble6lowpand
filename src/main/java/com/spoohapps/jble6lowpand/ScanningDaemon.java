@@ -1,7 +1,9 @@
 package com.spoohapps.jble6lowpand;
 
-import com.spoohapps.jble6lowpand.config.Config;
+import com.spoohapps.farcommon.Config;
+import com.spoohapps.farcommon.config.ConfigBuilder;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
+import com.spoohapps.jble6lowpand.config.DefaultConfig;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
 import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerBroadcaster;
@@ -68,16 +70,19 @@ public class ScanningDaemon implements Ble6LowpanController {
             }
         } catch (Exception ignored) {}
 
-        config = Config.fromDefaults();
+        ConfigBuilder<DaemonConfig> configBuilder = Config.from(DaemonConfig.class);
+
+        configBuilder.apply(new DefaultConfig());
 
         try {
             if (configFilePath != null) {
-                config = config.apply(Config.fromStream(
-                        Files.newInputStream(Paths.get(configFilePath))));
+                configBuilder.apply(Files.newInputStream(Paths.get(configFilePath)));
             }
         } catch (Exception ignored) {}
 
-        config = config.apply(Config.fromArgs(args));
+        configBuilder.apply(args);
+
+        config = configBuilder.build();
 
         logger.info("Whitelist path: {}", config.getWhitelistPath());
         logger.info("Scan Duration: {}", config.getScanDurationMs());
