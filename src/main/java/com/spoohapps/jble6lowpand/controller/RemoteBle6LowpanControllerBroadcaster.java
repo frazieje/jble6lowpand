@@ -1,6 +1,7 @@
 package com.spoohapps.jble6lowpand.controller;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainer;
@@ -33,6 +34,7 @@ public class RemoteBle6LowpanControllerBroadcaster implements Ble6LowpanControll
                 new GrizzlyHttpContainerProvider().createContainer(GrizzlyHttpContainer.class, config);
 
         httpServer = GrizzlyHttpServerFactory.createHttpServer(baseUri, httpContainer, false, null, false);
+        httpServer.addListener(new NetworkListener("devicenet", "10.172.14.4", port));
     }
 
     public void start() {
