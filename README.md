@@ -116,7 +116,7 @@ $ curl localhost:8080
 Add a bluetooth device to the whitelist:
 ``` bash
 $ curl -H "Content-Type: application/json" \
-  -X POST \
+  -X PUT \
   -d '{"name":"DEVICE1"}' \
   localhost:8080/00-AA-BB-CC-DD-EE
 ```
