@@ -13,7 +13,7 @@
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.media:jersey-media-json-jackson:2.27" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.jersey.inject:jersey-hk2:2.27" level="project" />
     <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.2.3" level="project" />
-    <orderEntry type="library" name="Gradle: com.spoohapps:farcommon:0.5.5" level="project" />
+    <orderEntry type="library" name="Gradle: com.spoohapps:farcommon:0.5.6" level="project" />
     <orderEntry type="library" name="Gradle: com.rabbitmq:amqp-client:5.2.0" level="project" />
     <orderEntry type="library" name="Gradle: org.glassfish.grizzly:grizzly-http-client:1.15" level="project" />
     <orderEntry type="library" name="Gradle: org.slf4j:slf4j-api:1.7.25" level="project" />
