@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,8 +57,8 @@ public class FileBasedKnownDeviceRepositoryTests {
     }
 
     private Set<BTAddress> getFileContents() {
-        try {
-            return Files.lines(filePath).map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
+        try (Stream<String> fileLines = Files.lines(filePath)) {
+            return fileLines.map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }

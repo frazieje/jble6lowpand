@@ -12,6 +12,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
@@ -103,8 +104,8 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
     }
 
 	private synchronized Set<BTAddress> getStoredAddresses() {
-	    try {
-            return Files.lines(filePath).map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
+	    try (Stream<String> addressLines = Files.lines(filePath)) {
+            return addressLines.map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             logger.error("error reading whitelist file");
         }
