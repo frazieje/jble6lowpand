@@ -15,6 +15,7 @@ import com.spoohapps.jble6lowpand.tasks.BleIpspScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -68,17 +69,20 @@ public class ScanningDaemon implements Ble6LowpanController {
                     configFilePath = args[i + 1];
                 }
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         ConfigBuilder<DaemonConfig> configBuilder = Config.from(DaemonConfig.class);
 
         configBuilder.apply(new DefaultConfig());
 
-        try {
-            if (configFilePath != null) {
-                configBuilder.apply(Files.newInputStream(Paths.get(configFilePath)));
+        if (configFilePath != null) {
+            try (InputStream fileStream = Files.newInputStream(Paths.get(configFilePath))) {
+                configBuilder.apply(fileStream);
+            } catch(Exception e){
+                logger.error("error reading config file", e);
             }
-        } catch (Exception ignored) {}
+        }
 
         configBuilder.apply(args);
 
