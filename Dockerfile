@@ -6,7 +6,7 @@ WORKDIR /home/gradle/src
 
 RUN gradle build -x test
 
-FROM openjdk:8-jdk-slim
+FROM openjdk:8-stretch
 
 EXPOSE 8089
 
@@ -35,7 +35,7 @@ RUN mkdir libs
 
 RUN make
 
-RUN cp /opt/jble6lowpand/jni/libs/libble6lowpand.so /usr/lib/
+RUN cp /opt/jble6lowpand/jni/libs/libble6lowpan.so /usr/lib/
 
 WORKDIR /opt/jble6lowpand
 
