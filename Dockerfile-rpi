@@ -6,10 +6,13 @@ WORKDIR /home/gradle/src
 
 RUN gradle build -x test
 
-FROM openjdk:8-jre-slim
+FROM resin/raspberry-pi-openjdk:8-jdk
+
+#RUN [ "cross-build-start" ]
 
 EXPOSE 8089
 
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     vim \
     gcc \
@@ -45,4 +48,6 @@ WORKDIR /opt/jble6lowpand
 
 RUN rm -rf jni/
 
-CMD bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
+CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
+
+#RUN [ "cross-build-end" ]
