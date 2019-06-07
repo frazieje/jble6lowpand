@@ -23,5 +23,8 @@ public class NativeBle6LowpanIpspService implements Ble6LowpanIpspService {
 
 	@Override
 	public native String[] getConnectedIpspDevices();
+
+	@Override
+	public native boolean initializeDevice();
 	
 }

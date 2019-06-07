@@ -129,7 +129,11 @@ public class ScanningDaemon implements Ble6LowpanController {
         try {
             logger.info("Starting...");
             controllerService.start();
+
             knownDevices.startWatcher();
+
+            ble6LowpanIpspService.initializeDevice();
+
             scanningExecutorService.scheduleWithFixedDelay(
                     new BleIpspScanner(ble6LowpanIpspService, config.getScanDurationMs(), availableDevices),
                     0,

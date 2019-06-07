@@ -39,6 +39,14 @@ JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspS
 JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_getConnectedIpspDevices
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService
+ * Method:    initializeDevice
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_initializeDevice
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

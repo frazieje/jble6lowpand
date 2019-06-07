@@ -279,6 +279,40 @@ static int get_ipsp_connections(char addresses[][DEVICE_ADDR_LEN]) {
 	return i;
 }
 
+static bool reset_device() {
+
+    int ctl;
+
+  	if ((ctl = socket(AF_BLUETOOTH, SOCK_RAW, BTPROTO_HCI)) < 0) {
+  		perror("Can't open HCI socket.");
+  		return false;
+    }
+
+    bool ret = true;
+
+    dev_id = hci_get_route(NULL);
+	if (dev_id < 0) {
+		perror("Could not find hci device");
+		ret = false;
+	}
+
+	if (ioctl(ctl, HCIDEVDOWN, dev_id) < 0) {
+		perror("Could not down hci device");
+		ret = false;
+    }
+
+	if (ioctl(ctl, HCIDEVUP, dev_id) < 0) {
+		if (errno == EALREADY)
+			return;
+		perror("Could not initialize hci device");
+		ret = false;
+    }
+
+    close(ctl);
+
+    return ret;
+}
+
 JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_scanIpspDevicesInternal(JNIEnv * env, jobject thisObj, jint timeout) {
     jobjectArray ret;
     int i;
@@ -312,6 +346,11 @@ JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspS
 	strcpy(disconnect_from, addr);
 	(*env)->ReleaseStringUTFChars(env, address, addr);
 	bool result = connect_device(disconnect_from, false);
+	return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_initializeDevice(JNIEnv *env, jobject thisObj) {
+	bool result = reset_device();
 	return result;
 }
 

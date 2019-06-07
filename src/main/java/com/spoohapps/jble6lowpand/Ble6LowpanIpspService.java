@@ -7,4 +7,5 @@ public interface Ble6LowpanIpspService {
 	boolean connectIpspDevice(String address);
 	boolean disconnectIpspDevice(String address);
 	String[] getConnectedIpspDevices();
+	boolean initializeDevice();
 }
