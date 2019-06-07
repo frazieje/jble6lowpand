@@ -6,7 +6,7 @@ WORKDIR /home/gradle/src
 
 RUN gradle build -x test
 
-FROM openjdk:8-stretch
+FROM openjdk:8-jdk-slim
 
 EXPOSE 8089
 
