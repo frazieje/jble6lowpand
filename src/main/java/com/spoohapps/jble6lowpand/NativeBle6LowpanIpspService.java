@@ -5,7 +5,7 @@ import com.spoohapps.farcommon.model.BTAddress;
 public class NativeBle6LowpanIpspService implements Ble6LowpanIpspService {
 	
 	static {
-		System.loadLibrary("ble6lowpand");	
+		System.loadLibrary("ble6lowpan");
 	}	
 	
 	@Override

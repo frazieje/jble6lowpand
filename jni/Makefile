@@ -1,4 +1,4 @@
-PROJECT_NAME := ble6lowpand
+PROJECT_NAME := ble6lowpan
 
 export OUTPUT_FILENAME
 #MAKEFILE_NAME := $(CURDIR)/$(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
@@ -6,7 +6,6 @@ MAKEFILE_NAME := $(MAKEFILE_LIST)
 MAKEFILE_DIR := $(dir $(MAKEFILE_NAME) ) 
 
 GNU_INSTALL_ROOT := /usr
-GNU_PREFIX := arm-linux-gnueabihf
 
 JAVA_INCLUDE_PATH := "$(JAVA_HOME)/include"
 JAVA_LINUX_INCLUDE_PATH := "$(JAVA_HOME)/include/linux"
@@ -22,20 +21,20 @@ NO_ECHO := @
 endif
 
 # Toolchain commands
-CC              := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-gcc'
-AS              := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-as'
-AR              := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-ar' -r
-LD              := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-ld'
-NM              := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-nm'
-OBJDUMP         := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-objdump'
-OBJCOPY         := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-objcopy'
-SIZE            := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-size'
+CC              := '$(GNU_INSTALL_ROOT)/bin/gcc'
+AS              := '$(GNU_INSTALL_ROOT)/bin/as'
+AR              := '$(GNU_INSTALL_ROOT)/bin/ar' -r
+LD              := '$(GNU_INSTALL_ROOT)/bin/ld'
+NM              := '$(GNU_INSTALL_ROOT)/bin/nm'
+OBJDUMP         := '$(GNU_INSTALL_ROOT)/bin/objdump'
+OBJCOPY         := '$(GNU_INSTALL_ROOT)/bin/objcopy'
+SIZE            := '$(GNU_INSTALL_ROOT)/bin/size'
 
 C_SOURCE_FILES += \
 $(abspath external/bluez/lib/bluetooth.c) \
 $(abspath external/bluez/lib/hci.c) \
 $(abspath external/bluez/src/shared/mainloop.c) \
-$(abspath src/ble6lowpand.c) \
+$(abspath src/ble6lowpan.c) \
 
 INC_PATHS  = -I$(JAVA_INCLUDE_PATH)
 INC_PATHS += -I$(JAVA_LINUX_INCLUDE_PATH)
@@ -43,4 +42,4 @@ INC_PATHS += -I$(abspath external/bluez/lib)
 INC_PATHS += -I$(abspath external/bluez/src/shared)
 
 all:
-	$(CC) -o $(abspath libs/libble6lowpand.so) -lc -shared -fPIC $(INC_PATHS) $(C_SOURCE_FILES)
+	$(CC) -o $(abspath libs/libble6lowpan.so) -lc -shared -fPIC $(INC_PATHS) $(C_SOURCE_FILES)

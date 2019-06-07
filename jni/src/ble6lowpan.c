@@ -113,7 +113,7 @@ static int scan_ipsp_device(int timeout, char addresses[][DEVICE_ADDR_LEN], char
 
 	int dd;
 
-	dev_id = hci_devid("hci0");
+	dev_id = hci_get_route(NULL);
 	if (dev_id < 0) {
 		perror("Could not find hci device");
 		return false;
