@@ -6,20 +6,16 @@ WORKDIR /home/gradle/src
 
 RUN gradle build -x test
 
-FROM openjdk:8-jre-slim
+FROM openjdk:8-jdk-slim
 
 EXPOSE 8089
 
 RUN apt-get update && apt-get install -y \
-    vim \
     gcc \
     build-essential \
     libglib2.0-dev \
     bluez \
     libbluetooth-dev \
-    wget \
-    unzip \
-    git \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
 
