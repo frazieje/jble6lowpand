@@ -302,10 +302,12 @@ static bool reset_device() {
     }
 
 	if (ioctl(ctl, HCIDEVUP, dev_id) < 0) {
-		if (errno == EALREADY)
-			return;
-		perror("Could not initialize hci device");
-		ret = false;
+		if (errno == EALREADY) {
+		    ret = false;
+		} else {
+		    perror("Could not initialize hci device");
+		    ret = false;
+		}
     }
 
     close(ctl);

@@ -68,8 +68,12 @@ public class FakeBle6LowpanIpspService implements Ble6LowpanIpspService {
 			connections.add(address.toString());
 		}
 		return connections.toArray(new String[0]);
-	}		
-	
+	}
+
+	@Override
+	public boolean initializeDevice() {
+		return true;
+	}
 
 
 }
