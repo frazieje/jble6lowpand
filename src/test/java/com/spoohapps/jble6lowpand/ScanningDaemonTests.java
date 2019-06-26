@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
-import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
+import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
 import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.junit.jupiter.api.*;
@@ -14,13 +14,13 @@ public class ScanningDaemonTests {
     private ScanningDaemon daemon;
     private KnownDeviceRepository knownDevices;
     private FakeDeviceService ipspService;
-    private Ble6LowpanControllerBroadcaster controllerService;
+    private ControllerBroadcaster controllerService;
 
     @BeforeAll
     public void context() {
         knownDevices = new InMemoryKnownDeviceRepository();
         ipspService = new FakeDeviceService();
-        controllerService = new FakeBle6LowpanControllerBroadcaster();
+        controllerService = new FakeControllerBroadcaster();
         daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), controllerService);
         try {
             daemon.start();

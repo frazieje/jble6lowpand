@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.controller.api;
 
-import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
+import com.spoohapps.jble6lowpand.controller.Controller;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.model.Status;
 
@@ -12,10 +12,10 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class StatusResource {
 
-    private final Ble6LowpanController controller;
+    private final Controller controller;
 
     @Inject
-    public StatusResource(Ble6LowpanController controller) {
+    public StatusResource(Controller controller) {
         this.controller = controller;
     }
 

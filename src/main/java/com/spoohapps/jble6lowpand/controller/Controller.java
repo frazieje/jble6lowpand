@@ -5,7 +5,7 @@ import com.spoohapps.jble6lowpand.config.DaemonConfig;
 
 import java.util.Set;
 
-public interface Ble6LowpanController {
+public interface Controller {
     Set<EUI48Address> getConnectedDevices();
     Set<EUI48Address> getAvailableDevices();
     Set<EUI48Address> getKnownDevices();

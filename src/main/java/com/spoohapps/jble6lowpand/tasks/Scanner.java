@@ -9,15 +9,15 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class BleIpspScanner implements Runnable {
+public class Scanner implements Runnable {
 
     private final CopyOnWriteArraySet<EUI48Address> availableDevices;
     private final DeviceService deviceService;
     private final int scanDurationSeconds;
 
-    private final Logger logger = LoggerFactory.getLogger(BleIpspScanner.class);
+    private final Logger logger = LoggerFactory.getLogger(Scanner.class);
 
-    public BleIpspScanner(DeviceService ipspService, int scanDurationSeconds, CopyOnWriteArraySet<EUI48Address> availableDevices) {
+    public Scanner(DeviceService ipspService, int scanDurationSeconds, CopyOnWriteArraySet<EUI48Address> availableDevices) {
         this.deviceService = ipspService;
         this.availableDevices = availableDevices;
         this.scanDurationSeconds = scanDurationSeconds;
@@ -25,7 +25,7 @@ public class BleIpspScanner implements Runnable {
 
     @Override
     public void run() {
-        logger.trace("Scanning for ipsp devices");
+        logger.trace("Scanning for devices");
         try {
             EUI48Address[] devices = deviceService.scanDevices(scanDurationSeconds);
             Set<EUI48Address> availableAddresses = new HashSet<>();
@@ -35,7 +35,7 @@ public class BleIpspScanner implements Runnable {
                     logger.trace("adding device {}", devices[i]);
                     availableAddresses.add(devices[i]);
                 } catch (IllegalArgumentException iae) {
-                    logger.trace("Error deserializing BT address");
+                    logger.trace("Error deserializing EUI48 address");
                 }
             }
             availableDevices.retainAll(availableAddresses);

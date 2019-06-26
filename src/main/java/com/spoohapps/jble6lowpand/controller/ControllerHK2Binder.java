@@ -7,24 +7,24 @@ import javax.inject.Singleton;
 
 public class ControllerHK2Binder extends AbstractBinder {
 
-    private Ble6LowpanController controller;
+    private Controller controller;
 
-    public ControllerHK2Binder(Ble6LowpanController controller) {
+    public ControllerHK2Binder(Controller controller) {
         this.controller = controller;
     }
 
     @Override
     protected void configure() {
-        bindFactory(new Factory<Ble6LowpanController>() {
+        bindFactory(new Factory<Controller>() {
             @Override
-            public Ble6LowpanController provide() {
+            public Controller provide() {
                 return controller;
             }
 
             @Override
-            public void dispose(Ble6LowpanController instance) {
+            public void dispose(Controller instance) {
                 //ignore
             }
-        }).to(Ble6LowpanController.class).in(Singleton.class);
+        }).to(Controller.class).in(Singleton.class);
     }
 }

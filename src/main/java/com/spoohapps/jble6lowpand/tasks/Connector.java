@@ -10,16 +10,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class BleIpspConnector implements Runnable {
+public class Connector implements Runnable {
 
     private final CopyOnWriteArraySet<EUI48Address> connectedDevices;
     private final CopyOnWriteArraySet<EUI48Address> availableDevices;
     private final DeviceService deviceService;
     private final KnownDeviceRepository knownDevices;
 
-    private final Logger logger = LoggerFactory.getLogger(BleIpspConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(Connector.class);
 
-    public BleIpspConnector(DeviceService ipspService, KnownDeviceRepository knownDevices, CopyOnWriteArraySet<EUI48Address> availableDevices, CopyOnWriteArraySet<EUI48Address> connectedDevices) {
+    public Connector(DeviceService ipspService, KnownDeviceRepository knownDevices, CopyOnWriteArraySet<EUI48Address> availableDevices, CopyOnWriteArraySet<EUI48Address> connectedDevices) {
         this.deviceService = ipspService;
         this.connectedDevices = connectedDevices;
         this.availableDevices = availableDevices;
@@ -54,12 +54,12 @@ public class BleIpspConnector implements Runnable {
                         try {
                             deviceService.disconnectDevice(devices[i]);
                         } catch (Exception e) {
-                            logger.error("Error disconnecting from unknown connected BT address {}", devices[i]);
+                            logger.error("Error disconnecting from unknown connected EUI48 address {}", devices[i]);
                             logger.error(e.getMessage());
                         }
                     }
                 } catch (IllegalArgumentException iae) {
-                    logger.error("Error deserializing connected BT address {}", devices[i]);
+                    logger.error("Error deserializing connected EUI48 address {}", devices[i]);
                 }
             }
             connectedDevices.retainAll(connectedAddresses);

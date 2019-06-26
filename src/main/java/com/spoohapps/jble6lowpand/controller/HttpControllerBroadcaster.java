@@ -1,9 +1,6 @@
 package com.spoohapps.jble6lowpand.controller;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpContainerProvider;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -15,13 +12,13 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.net.URI;
 
-public class RemoteBle6LowpanControllerBroadcaster implements Ble6LowpanControllerBroadcaster {
+public class HttpControllerBroadcaster implements ControllerBroadcaster {
 
     private final HttpServer httpServer;
 
-    private final Logger logger = LoggerFactory.getLogger(RemoteBle6LowpanControllerBroadcaster.class);
+    private final Logger logger = LoggerFactory.getLogger(HttpControllerBroadcaster.class);
 
-    public RemoteBle6LowpanControllerBroadcaster(Ble6LowpanController controller, int port) {
+    public HttpControllerBroadcaster(Controller controller, int port) {
 
         URI baseUri = UriBuilder.fromPath("/").host("0.0.0.0").port(port).build();
 

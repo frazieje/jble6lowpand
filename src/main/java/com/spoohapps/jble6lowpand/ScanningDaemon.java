@@ -5,13 +5,16 @@ import com.spoohapps.farcommon.config.ConfigBuilder;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.config.DefaultConfig;
-import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
-import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
-import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerBroadcaster;
+import com.spoohapps.jble6lowpand.config.DeviceServiceType;
+import com.spoohapps.jble6lowpand.config.KnownDevicesType;
+import com.spoohapps.jble6lowpand.controller.Controller;
+import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
+import com.spoohapps.jble6lowpand.controller.HttpControllerBroadcaster;
 import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
-import com.spoohapps.jble6lowpand.tasks.BleIpspConnector;
-import com.spoohapps.jble6lowpand.tasks.BleIpspScanner;
+import com.spoohapps.jble6lowpand.model.RedisKnownDevicesRepository;
+import com.spoohapps.jble6lowpand.tasks.Connector;
+import com.spoohapps.jble6lowpand.tasks.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ScanningDaemon implements Ble6LowpanController {
+public class ScanningDaemon implements Controller {
 	
 	private KnownDeviceRepository knownDevices;
 	private DeviceService deviceService;
@@ -33,7 +36,7 @@ public class ScanningDaemon implements Ble6LowpanController {
 
     private ScheduledExecutorService scanningExecutorService;
 
-    private Ble6LowpanControllerBroadcaster controllerService;
+    private ControllerBroadcaster controllerService;
 
     private DaemonConfig config;
 
@@ -45,7 +48,7 @@ public class ScanningDaemon implements Ble6LowpanController {
         initialize(args);
     }
 
-    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, DeviceService deviceService, DaemonConfig config, Ble6LowpanControllerBroadcaster controllerService) {
+    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, DeviceService deviceService, DaemonConfig config, ControllerBroadcaster controllerService) {
         this.scanningExecutorService = Executors.newScheduledThreadPool(3);
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
@@ -88,20 +91,42 @@ public class ScanningDaemon implements Ble6LowpanController {
 
         config = configBuilder.build();
 
-        logger.info("Whitelist path: {}", config.getWhitelistPath());
         logger.info("Scan Duration: {}", config.getScanDurationMs());
         logger.info("Scan Timeout: {}", config.getScanTimeoutMs());
         logger.info("Connect Timeout: {}", config.getConnectTimeoutMs());
         logger.info("Controller Port: {}", config.getControllerPort());
+        logger.info("Allocator Type: {}", config.getAllocatorType());
+        logger.info("Known Devices Type: {}", config.getKnownDevicesType());
+        logger.info("Whitelist path: {}", config.getWhitelistPath());
+        logger.info("Known Devices Host: {}", config.getKnownDevicesHost());
+        logger.info("Known Devices Port:, {}", config.getKnownDevicesPort());
 
         Path knownDevicesFilePath = Paths.get(config.getWhitelistPath());
 
         scanningExecutorService = Executors.newScheduledThreadPool(3);
+
         availableDevices = new CopyOnWriteArraySet<>();
+
         connectedDevices = new CopyOnWriteArraySet<>();
-        knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
-        deviceService = new NativeBle6LowpanIpspService();
-        controllerService = new RemoteBle6LowpanControllerBroadcaster(this, config.getControllerPort());
+
+        DeviceServiceType deviceServiceType = DeviceServiceType.valueOf(config.getAllocatorType());
+
+        if (deviceServiceType == DeviceServiceType.NATIVE_BLE_IPSP) {
+            deviceService = new NativeBle6LowpanIpspService();
+        }
+
+        KnownDevicesType knownDevicesType = KnownDevicesType.valueOf(config.getKnownDevicesType());
+
+        switch (knownDevicesType) {
+            case WHITELIST:
+                knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
+                break;
+            case REDIS:
+                knownDevices = new RedisKnownDevicesRepository(scanningExecutorService, config.getKnownDevicesHost(), config.getKnownDevicesPort());
+                break;
+        }
+
+        controllerService = new HttpControllerBroadcaster(this, config.getControllerPort());
     }
 
 	public void stop() {
@@ -132,18 +157,22 @@ public class ScanningDaemon implements Ble6LowpanController {
 
             knownDevices.startWatcher();
 
-            deviceService.initializeDevice();
+            if (deviceService != null) {
 
-            scanningExecutorService.scheduleWithFixedDelay(
-                    new BleIpspScanner(deviceService, config.getScanDurationMs(), availableDevices),
-                    0,
-                    config.getScanTimeoutMs(),
-                    TimeUnit.MILLISECONDS);
-            scanningExecutorService.scheduleWithFixedDelay(
-                    new BleIpspConnector(deviceService, knownDevices, availableDevices, connectedDevices),
-                    config.getScanDurationMs(),
-                    config.getConnectTimeoutMs(),
-                    TimeUnit.MILLISECONDS);
+                deviceService.initializeDevice();
+
+                scanningExecutorService.scheduleWithFixedDelay(
+                        new Scanner(deviceService, config.getScanDurationMs(), availableDevices),
+                        0,
+                        config.getScanTimeoutMs(),
+                        TimeUnit.MILLISECONDS);
+                scanningExecutorService.scheduleWithFixedDelay(
+                        new Connector(deviceService, knownDevices, availableDevices, connectedDevices),
+                        config.getScanDurationMs(),
+                        config.getConnectTimeoutMs(),
+                        TimeUnit.MILLISECONDS);
+
+            }
 
             Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 

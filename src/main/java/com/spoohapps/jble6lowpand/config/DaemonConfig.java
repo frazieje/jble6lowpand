@@ -15,6 +15,18 @@ public interface DaemonConfig {
     @ConfigFlags({"controllerPort", "p"})
     int getControllerPort();
 
+    @ConfigFlags({"allocatorType", "a"})
+    String getAllocatorType();
+
+    @ConfigFlags({"knownDevicesType", "k"})
+    String getKnownDevicesType();
+
     @ConfigFlags({"whitelistPath", "w"})
     String getWhitelistPath();
+
+    @ConfigFlags({"knownDevicesHost", "h"})
+    String getKnownDevicesHost();
+
+    @ConfigFlags({"knownDevicesPort", "u"})
+    int getKnownDevicesPort();
 }
