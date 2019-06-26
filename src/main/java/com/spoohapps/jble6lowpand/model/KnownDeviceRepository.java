@@ -1,17 +1,18 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
 
 import java.util.Set;
 
 public interface KnownDeviceRepository {
-	boolean contains(BTAddress address);
-	boolean add(BTAddress address);
-	boolean remove(BTAddress address);
-	boolean update(BTAddress address);
+
+	boolean contains(EUI48Address address);
+	boolean add(EUI48Address address);
+	boolean remove(EUI48Address address);
+	boolean update(EUI48Address address);
 
 	void startWatcher();
 	void stopWatcher();
 	void clear();
-	Set<BTAddress> getAll();
+	Set<EUI48Address> getAll();
 }

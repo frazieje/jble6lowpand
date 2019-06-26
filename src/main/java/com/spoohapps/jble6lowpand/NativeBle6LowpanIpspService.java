@@ -1,28 +1,28 @@
 package com.spoohapps.jble6lowpand;
 
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
 
-public class NativeBle6LowpanIpspService implements Ble6LowpanIpspService {
+public class NativeBle6LowpanIpspService implements DeviceService {
 	
 	static {
 		System.loadLibrary("ble6lowpan");
 	}	
 	
 	@Override
-	public BTAddress[] scanIpspDevices(int timeoutMs) {
-		return scanIpspDevicesInternal((timeoutMs / 1000));
+	public EUI48Address[] scanDevices(int timeoutMs) {
+		return scanDevicesInternal((timeoutMs / 1000));
 	}
 
-	private native BTAddress[] scanIpspDevicesInternal(int timeoutSeconds);
+	private native EUI48Address[] scanDevicesInternal(int timeoutSeconds);
 
 	@Override
-	public native boolean connectIpspDevice(String address);
+	public native boolean connectDevice(EUI48Address address);
 
 	@Override
-	public native boolean disconnectIpspDevice(String address);
+	public native boolean disconnectDevice(EUI48Address address);
 
 	@Override
-	public native String[] getConnectedIpspDevices();
+	public native EUI48Address[] getConnectedDevices();
 
 	@Override
 	public native boolean initializeDevice();

@@ -2,12 +2,12 @@ package com.spoohapps.jble6lowpand;
 
 import com.spoohapps.farcommon.Config;
 import com.spoohapps.farcommon.config.ConfigBuilder;
+import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.config.DefaultConfig;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanController;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
 import com.spoohapps.jble6lowpand.controller.RemoteBle6LowpanControllerBroadcaster;
-import com.spoohapps.farcommon.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import com.spoohapps.jble6lowpand.tasks.BleIpspConnector;
@@ -25,11 +25,11 @@ import java.util.concurrent.*;
 public class ScanningDaemon implements Ble6LowpanController {
 	
 	private KnownDeviceRepository knownDevices;
-	private Ble6LowpanIpspService ble6LowpanIpspService;
+	private DeviceService deviceService;
 
-    private CopyOnWriteArraySet<BTAddress> connectedDevices;
+    private CopyOnWriteArraySet<EUI48Address> connectedDevices;
 
-    private CopyOnWriteArraySet<BTAddress> availableDevices;
+    private CopyOnWriteArraySet<EUI48Address> availableDevices;
 
     private ScheduledExecutorService scanningExecutorService;
 
@@ -45,12 +45,12 @@ public class ScanningDaemon implements Ble6LowpanController {
         initialize(args);
     }
 
-    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, Ble6LowpanIpspService ble6LowpanIpspService, DaemonConfig config, Ble6LowpanControllerBroadcaster controllerService) {
+    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, DeviceService deviceService, DaemonConfig config, Ble6LowpanControllerBroadcaster controllerService) {
         this.scanningExecutorService = Executors.newScheduledThreadPool(3);
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
         this.knownDevices = knownDeviceRepository;
-        this.ble6LowpanIpspService = ble6LowpanIpspService;
+        this.deviceService = deviceService;
         this.config = config;
         this.controllerService = controllerService;
     }
@@ -100,7 +100,7 @@ public class ScanningDaemon implements Ble6LowpanController {
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
         knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
-        ble6LowpanIpspService = new NativeBle6LowpanIpspService();
+        deviceService = new NativeBle6LowpanIpspService();
         controllerService = new RemoteBle6LowpanControllerBroadcaster(this, config.getControllerPort());
     }
 
@@ -132,15 +132,15 @@ public class ScanningDaemon implements Ble6LowpanController {
 
             knownDevices.startWatcher();
 
-            ble6LowpanIpspService.initializeDevice();
+            deviceService.initializeDevice();
 
             scanningExecutorService.scheduleWithFixedDelay(
-                    new BleIpspScanner(ble6LowpanIpspService, config.getScanDurationMs(), availableDevices),
+                    new BleIpspScanner(deviceService, config.getScanDurationMs(), availableDevices),
                     0,
                     config.getScanTimeoutMs(),
                     TimeUnit.MILLISECONDS);
             scanningExecutorService.scheduleWithFixedDelay(
-                    new BleIpspConnector(ble6LowpanIpspService, knownDevices, availableDevices, connectedDevices),
+                    new BleIpspConnector(deviceService, knownDevices, availableDevices, connectedDevices),
                     config.getScanDurationMs(),
                     config.getConnectTimeoutMs(),
                     TimeUnit.MILLISECONDS);
@@ -157,22 +157,22 @@ public class ScanningDaemon implements Ble6LowpanController {
     }
 
     @Override
-    public Set<BTAddress> getAvailableDevices() {
+    public Set<EUI48Address> getAvailableDevices() {
         return availableDevices;
     }
 
     @Override
-    public Set<BTAddress> getKnownDevices() {
+    public Set<EUI48Address> getKnownDevices() {
         return knownDevices.getAll();
     }
 
     @Override
-    public Set<BTAddress> getConnectedDevices() {
+    public Set<EUI48Address> getConnectedDevices() {
         return connectedDevices;
     }
 
     @Override
-    public boolean addKnownDevice(BTAddress address) {
+    public boolean addKnownDevice(EUI48Address address) {
         try {
             return knownDevices.add(address);
         } catch (IllegalArgumentException iae) {
@@ -182,7 +182,7 @@ public class ScanningDaemon implements Ble6LowpanController {
     }
 
     @Override
-    public boolean removeKnownDevice(BTAddress address) {
+    public boolean removeKnownDevice(EUI48Address address) {
         try {
             return knownDevices.remove(address);
         } catch (IllegalArgumentException iae) {
@@ -192,7 +192,7 @@ public class ScanningDaemon implements Ble6LowpanController {
     }
 
     @Override
-    public boolean updateKnownDevice(BTAddress address) {
+    public boolean updateKnownDevice(EUI48Address address) {
         try {
             return knownDevices.update(address);
         } catch (IllegalArgumentException iae) {

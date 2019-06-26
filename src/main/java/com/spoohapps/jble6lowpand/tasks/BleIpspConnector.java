@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand.tasks;
 
-import com.spoohapps.jble6lowpand.Ble6LowpanIpspService;
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.jble6lowpand.DeviceService;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +12,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class BleIpspConnector implements Runnable {
 
-    private final CopyOnWriteArraySet<BTAddress> connectedDevices;
-    private final CopyOnWriteArraySet<BTAddress> availableDevices;
-    private final Ble6LowpanIpspService ble6LowpanIpspService;
+    private final CopyOnWriteArraySet<EUI48Address> connectedDevices;
+    private final CopyOnWriteArraySet<EUI48Address> availableDevices;
+    private final DeviceService deviceService;
     private final KnownDeviceRepository knownDevices;
 
     private final Logger logger = LoggerFactory.getLogger(BleIpspConnector.class);
 
-    public BleIpspConnector(Ble6LowpanIpspService ipspService, KnownDeviceRepository knownDevices, CopyOnWriteArraySet<BTAddress> availableDevices, CopyOnWriteArraySet<BTAddress> connectedDevices) {
-        this.ble6LowpanIpspService = ipspService;
+    public BleIpspConnector(DeviceService ipspService, KnownDeviceRepository knownDevices, CopyOnWriteArraySet<EUI48Address> availableDevices, CopyOnWriteArraySet<EUI48Address> connectedDevices) {
+        this.deviceService = ipspService;
         this.connectedDevices = connectedDevices;
         this.availableDevices = availableDevices;
         this.knownDevices = knownDevices;
@@ -28,11 +28,11 @@ public class BleIpspConnector implements Runnable {
 
     @Override
     public void run() {
-        for (BTAddress address : availableDevices) {
+        for (EUI48Address address : availableDevices) {
             if (knownDevices.contains(address) && !connectedDevices.contains(address)) {
                 logger.info("Connecting to {} ... ", address.toString());
                 try {
-                    if (ble6LowpanIpspService.connectIpspDevice(address.getAddress())) {
+                    if (deviceService.connectDevice(address)) {
                         logger.info("Connected to {}", address.toString());
                         break;
                     } else {
@@ -45,15 +45,14 @@ public class BleIpspConnector implements Runnable {
             }
         }
         try {
-            String[] devices = ble6LowpanIpspService.getConnectedIpspDevices();
-            Set<BTAddress> connectedAddresses = new HashSet<>();
+            EUI48Address[] devices = deviceService.getConnectedDevices();
+            Set<EUI48Address> connectedAddresses = new HashSet<>();
             for (int i = 0; i < devices.length; i++) {
                 try {
-                    BTAddress address = new BTAddress(devices[i]);
-                    connectedAddresses.add(address);
-                    if (!knownDevices.contains(address)) {
+                    connectedAddresses.add(devices[i]);
+                    if (!knownDevices.contains(devices[i])) {
                         try {
-                            ble6LowpanIpspService.disconnectIpspDevice(address.getAddress());
+                            deviceService.disconnectDevice(devices[i]);
                         } catch (Exception e) {
                             logger.error("Error disconnecting from unknown connected BT address {}", devices[i]);
                             logger.error(e.getMessage());

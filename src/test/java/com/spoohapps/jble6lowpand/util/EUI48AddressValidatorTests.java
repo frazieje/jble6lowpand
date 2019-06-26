@@ -1,16 +1,16 @@
 package com.spoohapps.jble6lowpand.util;
 
-import com.spoohapps.farcommon.util.BTAddressValidator;
-import com.spoohapps.farcommon.util.BTAddressValidatorImpl;
+import com.spoohapps.farcommon.util.EUI48AddressValidator;
+import com.spoohapps.farcommon.util.EUI48AddressValidatorImpl;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BTAddressValidatorTests {
+public class EUI48AddressValidatorTests {
 
-    private final BTAddressValidator validator;
+    private final EUI48AddressValidator validator;
 
-    public BTAddressValidatorTests() {
-        validator = new BTAddressValidatorImpl();
+    public EUI48AddressValidatorTests() {
+        validator = new EUI48AddressValidatorImpl();
     }
 
     @Test

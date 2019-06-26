@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
 import org.junit.jupiter.api.*;
 
 import java.io.BufferedWriter;
@@ -56,18 +56,18 @@ public class FileBasedKnownDeviceRepositoryTests {
         }
     }
 
-    private Set<BTAddress> getFileContents() {
+    private Set<EUI48Address> getFileContents() {
         try (Stream<String> fileLines = Files.lines(filePath)) {
-            return fileLines.map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
+            return fileLines.map(EUI48Address::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
         return new HashSet<>();
     }
 
-    private void writeFileContents(Set<BTAddress> addresses) {
+    private void writeFileContents(Set<EUI48Address> addresses) {
         try (BufferedWriter bw = Files.newBufferedWriter(filePath, Charset.defaultCharset())) {
-            String data = addresses.stream().map(BTAddress::toString).collect(Collectors.joining(System.getProperty("line.separator")));
+            String data = addresses.stream().map(EUI48Address::toString).collect(Collectors.joining(System.getProperty("line.separator")));
             bw.write(data);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -76,21 +76,21 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     @Test
     public void shouldSaveAddedAddressesToFile() {
-        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
+        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }
 
     @Test
     public void shouldSaveAddedAddressesWithNamesToFile() {
-        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF testName");
+        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF testName");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }
 
     @Test
     public void shouldRemoveRemovedAddressesFromFile() {
-        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
+        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF");
         knownDevices.add(address);
         knownDevices.remove(address);
         assertFalse(getFileContents().contains(address));
@@ -98,18 +98,18 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     @Test
     public void shouldNotAddExistingDevice() {
-        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF TEST");
+        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF TEST");
         knownDevices.add(address);
-        BTAddress address2 = new BTAddress("00:AA:BB:CC:DD:FF testName");
+        EUI48Address address2 = new EUI48Address("00:AA:BB:CC:DD:FF testName");
         knownDevices.add(address2);
         assertFalse(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
     }
 
     @Test
     public void shouldUpdateExistingDevice() {
-        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF TEST");
+        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF TEST");
         knownDevices.add(address);
-        BTAddress address2 = new BTAddress("00:AA:BB:CC:DD:FF testName");
+        EUI48Address address2 = new EUI48Address("00:AA:BB:CC:DD:FF testName");
         knownDevices.update(address2);
         assertEquals(1, getFileContents().size());
         assertTrue(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
@@ -119,8 +119,8 @@ public class FileBasedKnownDeviceRepositoryTests {
     @Test
     public void shouldWatchForFileChanges() {
         sleep(1000);
-        BTAddress address = new BTAddress("00:AA:BB:CC:DD:FF");
-        Set<BTAddress> addAddresses = new HashSet<>();
+        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF");
+        Set<EUI48Address> addAddresses = new HashSet<>();
         addAddresses.add(address);
         writeFileContents(addAddresses);
         sleep(10000);

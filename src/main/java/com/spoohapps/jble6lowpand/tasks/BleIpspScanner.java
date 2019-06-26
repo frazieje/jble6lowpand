@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand.tasks;
 
-import com.spoohapps.jble6lowpand.Ble6LowpanIpspService;
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.jble6lowpand.DeviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,14 +11,14 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class BleIpspScanner implements Runnable {
 
-    private final CopyOnWriteArraySet<BTAddress> availableDevices;
-    private final Ble6LowpanIpspService ble6LowpanIpspService;
+    private final CopyOnWriteArraySet<EUI48Address> availableDevices;
+    private final DeviceService deviceService;
     private final int scanDurationSeconds;
 
     private final Logger logger = LoggerFactory.getLogger(BleIpspScanner.class);
 
-    public BleIpspScanner(Ble6LowpanIpspService ipspService, int scanDurationSeconds, CopyOnWriteArraySet<BTAddress> availableDevices) {
-        this.ble6LowpanIpspService = ipspService;
+    public BleIpspScanner(DeviceService ipspService, int scanDurationSeconds, CopyOnWriteArraySet<EUI48Address> availableDevices) {
+        this.deviceService = ipspService;
         this.availableDevices = availableDevices;
         this.scanDurationSeconds = scanDurationSeconds;
     }
@@ -27,8 +27,8 @@ public class BleIpspScanner implements Runnable {
     public void run() {
         logger.trace("Scanning for ipsp devices");
         try {
-            BTAddress[] devices = ble6LowpanIpspService.scanIpspDevices(scanDurationSeconds);
-            Set<BTAddress> availableAddresses = new HashSet<>();
+            EUI48Address[] devices = deviceService.scanDevices(scanDurationSeconds);
+            Set<EUI48Address> availableAddresses = new HashSet<>();
             logger.trace("{} devices found", devices.length);
             for (int i = 0; i < devices.length; i++) {
                 try {

@@ -9,34 +9,34 @@ extern "C" {
 #endif
 /*
  * Class:     com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService
- * Method:    scanIpspDevicesInternal
- * Signature: (I)[Lcom/spoohapps/farcommon/model/BTAddress;
+ * Method:    scanDevicesInternal
+ * Signature: (I)[Lcom/spoohapps/farcommon/model/EUI48Address;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_scanIpspDevicesInternal
+JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_scanDevicesInternal
   (JNIEnv *, jobject, jint);
 
 /*
  * Class:     com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService
- * Method:    connectIpspDevice
- * Signature: (Ljava/lang/String;)Z
+ * Method:    connectDevice
+ * Signature: (Lcom/spoohapps/farcommon/model/EUI48Address;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_connectIpspDevice
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_connectDevice
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService
- * Method:    disconnectIpspDevice
- * Signature: (Ljava/lang/String;)Z
+ * Method:    disconnectDevice
+ * Signature: (Lcom/spoohapps/farcommon/model/EUI48Address;)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_disconnectIpspDevice
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_disconnectDevice
+  (JNIEnv *, jobject, jobject);
 
 /*
  * Class:     com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService
- * Method:    getConnectedIpspDevices
- * Signature: ()[Ljava/lang/String;
+ * Method:    getConnectedDevices
+ * Signature: ()[Lcom/spoohapps/farcommon/model/EUI48Address;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_getConnectedIpspDevices
+JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_getConnectedDevices
   (JNIEnv *, jobject);
 
 /*

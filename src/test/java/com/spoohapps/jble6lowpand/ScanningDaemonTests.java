@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand;
+import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.Ble6LowpanControllerBroadcaster;
-import com.spoohapps.farcommon.model.BTAddress;
 import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.junit.jupiter.api.*;
@@ -13,13 +13,13 @@ public class ScanningDaemonTests {
 
     private ScanningDaemon daemon;
     private KnownDeviceRepository knownDevices;
-    private FakeBle6LowpanIpspService ipspService;
+    private FakeDeviceService ipspService;
     private Ble6LowpanControllerBroadcaster controllerService;
 
     @BeforeAll
     public void context() {
         knownDevices = new InMemoryKnownDeviceRepository();
-        ipspService = new FakeBle6LowpanIpspService();
+        ipspService = new FakeDeviceService();
         controllerService = new FakeBle6LowpanControllerBroadcaster();
         daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), controllerService);
         try {
@@ -54,7 +54,7 @@ public class ScanningDaemonTests {
 
     @Test
     public void shouldConnectToKnownDevice() {
-        BTAddress knownAddress = new BTAddress("35:80:41:4B:D0:E2");
+        EUI48Address knownAddress = new EUI48Address("35:80:41:4B:D0:E2");
         knownDevices.add(knownAddress);
         ipspService.addSeedAddress(knownAddress);
         sleep(500);
@@ -63,8 +63,8 @@ public class ScanningDaemonTests {
 
     @Test
     public void shouldDisconnectFromUnknownDevice() {
-        BTAddress unknownAddress = new BTAddress("35:80:41:4B:D0:E2");
-        ipspService.connectIpspDevice(unknownAddress.getAddress());
+        EUI48Address unknownAddress = new EUI48Address("35:80:41:4B:D0:E2");
+        ipspService.connectDevice(unknownAddress);
         sleep(500);
         assertFalse(daemon.getConnectedDevices().contains(unknownAddress));
     }

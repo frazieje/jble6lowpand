@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 
 import java.util.Set;
@@ -22,15 +22,15 @@ public class Status {
     private Set<String> knownDevices;
     private Set<String> availableDevices;
 
-    public Status(DaemonConfig config, Set<BTAddress> availableDevices, Set<BTAddress> connectedDevices, Set<BTAddress> knownDevices) {
+    public Status(DaemonConfig config, Set<EUI48Address> availableDevices, Set<EUI48Address> connectedDevices, Set<EUI48Address> knownDevices) {
         whitelistFile = config.getWhitelistPath();
         scanDurationMs = config.getScanDurationMs();
         scanTimeoutMs = config.getScanTimeoutMs();
         connectTimeoutMs = config.getConnectTimeoutMs();
         controllerPort = config.getControllerPort();
-        this.availableDevices = availableDevices.stream().map(BTAddress::toString).collect(Collectors.toSet());
-        this.connectedDevices = connectedDevices.stream().map(BTAddress::toString).collect(Collectors.toSet());
-        this.knownDevices = knownDevices.stream().map(BTAddress::toString).collect(Collectors.toSet());
+        this.availableDevices = availableDevices.stream().map(EUI48Address::toString).collect(Collectors.toSet());
+        this.connectedDevices = connectedDevices.stream().map(EUI48Address::toString).collect(Collectors.toSet());
+        this.knownDevices = knownDevices.stream().map(EUI48Address::toString).collect(Collectors.toSet());
     }
 
     public String getWhitelistFile() {

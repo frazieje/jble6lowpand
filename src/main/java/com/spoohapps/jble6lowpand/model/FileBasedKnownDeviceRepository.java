@@ -1,10 +1,11 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.BTAddress;
+import com.spoohapps.farcommon.model.EUI48Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	private final WhitelistFileWatcher watcher;
 	private final Path filePath;
 
-	private Set<BTAddress> knownDevices;
+	private Set<EUI48Address> knownDevices;
 
     private final Logger logger = LoggerFactory.getLogger(FileBasedKnownDeviceRepository.class);
 
@@ -30,6 +31,9 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
 	public void startWatcher() {
+        if (!Files.exists(filePath)) {
+            setStoredAddresses(new HashSet<>());
+        }
         init();
         watcher.start();
     }
@@ -39,7 +43,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
     }
 
     private void init() {
-        Set<BTAddress> whitelistedAddresses = getStoredAddresses();
+        Set<EUI48Address> whitelistedAddresses = getStoredAddresses();
         knownDevices.addAll(whitelistedAddresses);
     }
 
@@ -49,13 +53,13 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
     }
 
 	@Override
-	public boolean contains(BTAddress address) {
+	public boolean contains(EUI48Address address) {
 		return knownDevices.contains(address);
 	}
 
 	@Override
-	public boolean add(BTAddress address) {
-        Set<BTAddress> copy = getStoredAddresses();
+	public boolean add(EUI48Address address) {
+        Set<EUI48Address> copy = getStoredAddresses();
         if (copy.add(address)) {
             setStoredAddresses(copy);
             return true;
@@ -64,8 +68,8 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
 	@Override
-	public boolean remove(BTAddress address) {
-        Set<BTAddress> copy = getStoredAddresses();
+	public boolean remove(EUI48Address address) {
+        Set<EUI48Address> copy = getStoredAddresses();
         if (copy.remove(address)) {
             setStoredAddresses(copy);
             return true;
@@ -74,8 +78,8 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
     @Override
-    public boolean update(BTAddress address) {
-        Set<BTAddress> copy = getStoredAddresses();
+    public boolean update(EUI48Address address) {
+        Set<EUI48Address> copy = getStoredAddresses();
         if (copy.remove(address)) {
             copy.add(address);
             setStoredAddresses(copy);
@@ -90,22 +94,22 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
 	@Override
-    public Set<BTAddress> getAll() {
+    public Set<EUI48Address> getAll() {
         return new HashSet<>(knownDevices);
     }
 
-	private synchronized void setStoredAddresses(Set<BTAddress> addresses) {
+	private synchronized void setStoredAddresses(Set<EUI48Address> addresses) {
         try {
-            byte[] bytes = addresses.stream().map(BTAddress::toString).collect(Collectors.joining(System.getProperty("line.separator"))).getBytes();
+            byte[] bytes = addresses.stream().map(EUI48Address::toString).collect(Collectors.joining(System.getProperty("line.separator"))).getBytes();
             Files.write(filePath, bytes);
         } catch (IOException ioe) {
             logger.error("error writing whitelist file");
         }
     }
 
-	private synchronized Set<BTAddress> getStoredAddresses() {
+	private synchronized Set<EUI48Address> getStoredAddresses() {
 	    try (Stream<String> addressLines = Files.lines(filePath)) {
-            return addressLines.map(BTAddress::new).collect(Collectors.toCollection(HashSet::new));
+            return addressLines.map(EUI48Address::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             logger.error("error reading whitelist file");
         }

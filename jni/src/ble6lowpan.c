@@ -315,14 +315,14 @@ static bool reset_device() {
     return ret;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_scanIpspDevicesInternal(JNIEnv * env, jobject thisObj, jint timeout) {
+JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_scanDevicesInternal(JNIEnv * env, jobject thisObj, jint timeout) {
     jobjectArray ret;
     int i;
     char addresses[MAX_BLE_CONN][DEVICE_ADDR_LEN];
     char names[MAX_BLE_CONN][DEVICE_NAME_LEN];
     int num = scan_ipsp_device(timeout, addresses, names);
 
-    jclass cls = (*env)->FindClass(env, "com/spoohapps/farcommon/model/BTAddress");
+    jclass cls = (*env)->FindClass(env, "com/spoohapps/farcommon/model/EUI48Address");
     ret = (jobjectArray)(*env)->NewObjectArray(env, num, cls, NULL);
     jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 
@@ -333,20 +333,26 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
     return ret;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_connectIpspDevice(JNIEnv *env, jobject thisObj, jstring address) {
-	const char *addr = (*env)->GetStringUTFChars(env, address, 0);
+JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_connectDevice(JNIEnv *env, jobject thisObj, jobject address) {
+    jclass cls = (*env)->GetObjectClass(env, address);
+    jmethodID getAddress = (*env)->GetMethodID(env, cls, "getAddress", "()Ljava/lang/String;");
+    jstring jaddrstr = (jstring)(*env)->CallObjectMethod(address, getAddress);
+	const char *addr = (*env)->GetStringUTFChars(env, jaddrstr, 0);
 	char connect_to[DEVICE_ADDR_LEN];
 	strcpy(connect_to, addr);
-	(*env)->ReleaseStringUTFChars(env, address, addr);
+	(*env)->ReleaseStringUTFChars(env, jaddrstr, addr);
 	bool result = connect_device(connect_to, true);
 	return result;
 }
 
-JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_disconnectIpspDevice(JNIEnv *env, jobject thisObj, jstring address) {
-	const char *addr = (*env)->GetStringUTFChars(env, address, 0);
+JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_disconnectDevice(JNIEnv *env, jobject thisObj, jobject address) {
+    jclass cls = (*env)->GetObjectClass(env, address);
+    jmethodID getAddress = (*env)->GetMethodID(env, cls, "getAddress", "()Ljava/lang/String;");
+    jstring jaddrstr = (jstring)(*env)->CallObjectMethod(address, getAddress);
+	const char *addr = (*env)->GetStringUTFChars(env, jaddrstr, 0);
 	char disconnect_from[DEVICE_ADDR_LEN];
 	strcpy(disconnect_from, addr);
-	(*env)->ReleaseStringUTFChars(env, address, addr);
+	(*env)->ReleaseStringUTFChars(env, jaddrstr, addr);
 	bool result = connect_device(disconnect_from, false);
 	return result;
 }
@@ -356,14 +362,16 @@ JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspS
 	return result;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_getConnectedIpspDevices(JNIEnv *env, jobject thisObj) {
+JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_getConnectedDevices(JNIEnv *env, jobject thisObj) {
     jobjectArray ret;
     int i;
     char addresses[MAX_BLE_CONN][DEVICE_ADDR_LEN];
     int num = get_ipsp_connections(addresses);
-    ret = (jobjectArray)(*env)->NewObjectArray(env, num, (*env)->FindClass(env, "java/lang/String"), NULL);
+    ret = (jobjectArray)(*env)->NewObjectArray(env, num, (*env)->FindClass(env, "com/spoohapps/farcommon/model/EUI48Address"), NULL);
+    jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(Ljava/lang/String;)V");
     for (i = 0; i < num; i++) {
-    	(*env)->SetObjectArrayElement(env, ret, i, (*env)->NewStringUTF(env, addresses[i]));
+        jobject object = (*env)->NewObject(env, cls, constructor, (*env)->NewStringUTF(env, addresses[i]));
+    	(*env)->SetObjectArrayElement(env, ret, i, object);
     }
     return ret;
 }
