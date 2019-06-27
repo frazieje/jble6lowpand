@@ -367,7 +367,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
     int i;
     char addresses[MAX_BLE_CONN][DEVICE_ADDR_LEN];
     int num = get_ipsp_connections(addresses);
-    ret = (jobjectArray)(*env)->NewObjectArray(env, num, (*env)->FindClass(env, "com/spoohapps/farcommon/model/EUI48Address"), NULL);
+    jclass cls = (*env)->FindClass(env, "com/spoohapps/farcommon/model/EUI48Address");
+    ret = (jobjectArray)(*env)->NewObjectArray(env, num, cls, NULL);
     jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(Ljava/lang/String;)V");
     for (i = 0; i < num; i++) {
         jobject object = (*env)->NewObject(env, cls, constructor, (*env)->NewStringUTF(env, addresses[i]));
