@@ -336,7 +336,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
 JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_connectDevice(JNIEnv *env, jobject thisObj, jobject address) {
     jclass cls = (*env)->GetObjectClass(env, address);
     jmethodID getAddress = (*env)->GetMethodID(env, cls, "getAddress", "()Ljava/lang/String;");
-    jstring jaddrstr = (jstring)(*env)->CallObjectMethod(address, getAddress);
+    jstring jaddrstr = (jstring)(*env)->CallObjectMethod(env, address, getAddress);
 	const char *addr = (*env)->GetStringUTFChars(env, jaddrstr, 0);
 	char connect_to[DEVICE_ADDR_LEN];
 	strcpy(connect_to, addr);
@@ -348,7 +348,7 @@ JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspS
 JNIEXPORT jboolean JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanIpspService_disconnectDevice(JNIEnv *env, jobject thisObj, jobject address) {
     jclass cls = (*env)->GetObjectClass(env, address);
     jmethodID getAddress = (*env)->GetMethodID(env, cls, "getAddress", "()Ljava/lang/String;");
-    jstring jaddrstr = (jstring)(*env)->CallObjectMethod(address, getAddress);
+    jstring jaddrstr = (jstring)(*env)->CallObjectMethod(env, address, getAddress);
 	const char *addr = (*env)->GetStringUTFChars(env, jaddrstr, 0);
 	char disconnect_from[DEVICE_ADDR_LEN];
 	strcpy(disconnect_from, addr);
