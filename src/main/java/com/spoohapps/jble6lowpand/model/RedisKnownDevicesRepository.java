@@ -21,7 +21,9 @@ public class RedisKnownDevicesRepository implements KnownDeviceRepository {
 
 
     private final Manager<StatefulRedisConnection<String, String>> redisConnectionManager;
+
     private final CacheProvider cacheProvider;
+
     private final String knownDevicesKey = "knownDevices";
 
     public RedisKnownDevicesRepository(ScheduledExecutorService scheduledExecutorService,
