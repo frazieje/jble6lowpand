@@ -98,8 +98,28 @@ public class ScanningDaemonTests {
         }
 
         @Override
+        public String getAllocatorType() {
+            return null;
+        }
+
+        @Override
+        public String getKnownDevicesType() {
+            return null;
+        }
+
+        @Override
         public String getWhitelistPath() {
             return "some path";
+        }
+
+        @Override
+        public String getKnownDevicesHost() {
+            return null;
+        }
+
+        @Override
+        public int getKnownDevicesPort() {
+            return 0;
         }
     }
 

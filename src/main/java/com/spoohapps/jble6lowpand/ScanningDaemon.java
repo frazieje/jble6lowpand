@@ -111,17 +111,17 @@ public class ScanningDaemon implements Controller {
 
         DeviceServiceType deviceServiceType = DeviceServiceType.valueOf(config.getAllocatorType());
 
-        if (deviceServiceType == DeviceServiceType.NATIVE_BLE_IPSP) {
+        if (deviceServiceType == DeviceServiceType.native_ble_ipsp) {
             deviceService = new NativeBle6LowpanIpspService();
         }
 
         KnownDevicesType knownDevicesType = KnownDevicesType.valueOf(config.getKnownDevicesType());
 
         switch (knownDevicesType) {
-            case WHITELIST:
+            case whitelist:
                 knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
                 break;
-            case REDIS:
+            case redis:
                 knownDevices = new RedisKnownDevicesRepository(scanningExecutorService, config.getKnownDevicesHost(), config.getKnownDevicesPort());
                 break;
         }
@@ -166,6 +166,7 @@ public class ScanningDaemon implements Controller {
                         0,
                         config.getScanTimeoutMs(),
                         TimeUnit.MILLISECONDS);
+
                 scanningExecutorService.scheduleWithFixedDelay(
                         new Connector(deviceService, knownDevices, availableDevices, connectedDevices),
                         config.getScanDurationMs(),

@@ -1,12 +1,10 @@
 package com.spoohapps.jble6lowpand.config;
 
-import com.spoohapps.jble6lowpand.DeviceService;
-
 public class DefaultConfig implements DaemonConfig {
 
     private static final int defaultScanDurationMs = 3000;
     private static final int defaultTimeBetweenScansMs = 2000;
-    private static final int defaultTimeBetweenConnectionAttemptsMs = 1000;
+    private static final int defaultTimeBetweenConnectionAttemptsMs = 2000;
     private static final int defaultControllerPort = 8089;
 
     private static final String defaultWhitelistPath = "/opt/jble6lowpand/data/knowndevices.conf";
@@ -33,12 +31,12 @@ public class DefaultConfig implements DaemonConfig {
 
     @Override
     public String getAllocatorType() {
-        return DeviceServiceType.NATIVE_BLE_IPSP.getName();
+        return DeviceServiceType.native_ble_ipsp.name();
     }
 
     @Override
     public String getKnownDevicesType() {
-        return KnownDevicesType.WHITELIST.getName();
+        return KnownDevicesType.whitelist.name();
     }
 
     @Override
