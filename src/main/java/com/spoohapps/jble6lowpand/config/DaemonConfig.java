@@ -2,6 +2,8 @@ package com.spoohapps.jble6lowpand.config;
 
 import com.spoohapps.farcommon.config.ConfigFlags;
 
+import java.util.List;
+
 public interface DaemonConfig {
     @ConfigFlags({"scanDuration", "d"})
     int getScanDurationMs();
@@ -18,15 +20,15 @@ public interface DaemonConfig {
     @ConfigFlags({"allocatorType", "a"})
     String getAllocatorType();
 
-    @ConfigFlags({"knownDevicesType", "k"})
-    String getKnownDevicesType();
+    @ConfigFlags({"deviceListingConsumers", "k"})
+    List<String> getDeviceListingConsumers();
 
     @ConfigFlags({"whitelistPath", "w"})
     String getWhitelistPath();
 
-    @ConfigFlags({"knownDevicesHost", "h"})
-    String getKnownDevicesHost();
+    @ConfigFlags({"redisHost", "h"})
+    String getRedisHost();
 
-    @ConfigFlags({"knownDevicesPort", "u"})
-    int getKnownDevicesPort();
+    @ConfigFlags({"redisPort", "u"})
+    int getRedisPort();
 }

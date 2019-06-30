@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.TimeUnit;
@@ -24,10 +24,13 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
     private final Logger logger = LoggerFactory.getLogger(FileBasedKnownDeviceRepository.class);
 
-    public FileBasedKnownDeviceRepository(Path filePath) {
+    private final List<DeviceListingConsumer> deviceListingConsumers;
+
+    public FileBasedKnownDeviceRepository(Path filePath, List<DeviceListingConsumer> deviceListingConsumers) {
 		this.watcher = new WhitelistFileWatcher(filePath, this::onFileChanged);
 		this.filePath = filePath;
 		knownDevices = new CopyOnWriteArraySet<>();
+		this.deviceListingConsumers = deviceListingConsumers;
 	}
 
 	public void startWatcher() {
@@ -49,6 +52,8 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
     private synchronized void onFileChanged() {
         logger.trace("known devices file changed");
+        Set<EUI48Address> addresses = getStoredAddresses();
+        deviceListingConsumers.forEach(c -> c.accept(addresses));
         knownDevices = new CopyOnWriteArraySet<>(getStoredAddresses());
     }
 

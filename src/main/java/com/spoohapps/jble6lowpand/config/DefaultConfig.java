@@ -1,5 +1,8 @@
 package com.spoohapps.jble6lowpand.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DefaultConfig implements DaemonConfig {
 
     private static final int defaultScanDurationMs = 3000;
@@ -35,22 +38,21 @@ public class DefaultConfig implements DaemonConfig {
     }
 
     @Override
-    public String getKnownDevicesType() {
-        return KnownDevicesType.whitelist.name();
+    public List<String> getDeviceListingConsumers() {
+        return new ArrayList<>();
     }
-
     @Override
     public String getWhitelistPath() {
         return defaultWhitelistPath;
     }
 
     @Override
-    public String getKnownDevicesHost() {
+    public String getRedisHost() {
         return null;
     }
 
     @Override
-    public int getKnownDevicesPort() {
+    public int getRedisPort() {
         return 0;
     }
 }

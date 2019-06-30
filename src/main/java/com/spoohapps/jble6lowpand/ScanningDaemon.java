@@ -5,14 +5,15 @@ import com.spoohapps.farcommon.config.ConfigBuilder;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.config.DefaultConfig;
+import com.spoohapps.jble6lowpand.config.DeviceListingConsumerType;
 import com.spoohapps.jble6lowpand.config.DeviceServiceType;
-import com.spoohapps.jble6lowpand.config.KnownDevicesType;
 import com.spoohapps.jble6lowpand.controller.Controller;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
 import com.spoohapps.jble6lowpand.controller.HttpControllerBroadcaster;
+import com.spoohapps.jble6lowpand.model.DeviceListingConsumer;
 import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
-import com.spoohapps.jble6lowpand.model.RedisKnownDevicesRepository;
+import com.spoohapps.jble6lowpand.model.RedisDeviceListingConsumer;
 import com.spoohapps.jble6lowpand.tasks.Connector;
 import com.spoohapps.jble6lowpand.tasks.Scanner;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ public class ScanningDaemon implements Controller {
     private DaemonConfig config;
 
     private final Logger logger = LoggerFactory.getLogger(ScanningDaemon.class);
+    private List<DeviceListingConsumer> deviceListingConsumers;
 
     public ScanningDaemon() {}
 
@@ -48,7 +50,7 @@ public class ScanningDaemon implements Controller {
         initialize(args);
     }
 
-    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, DeviceService deviceService, DaemonConfig config, ControllerBroadcaster controllerService) {
+    public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, DeviceService deviceService, DaemonConfig config, List<DeviceListingConsumer> deviceListingConsumers, ControllerBroadcaster controllerService) {
         this.scanningExecutorService = Executors.newScheduledThreadPool(3);
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
@@ -56,6 +58,7 @@ public class ScanningDaemon implements Controller {
         this.deviceService = deviceService;
         this.config = config;
         this.controllerService = controllerService;
+        this.deviceListingConsumers = deviceListingConsumers;
     }
 
     public static void main(String[] args) {
@@ -96,14 +99,36 @@ public class ScanningDaemon implements Controller {
         logger.info("Connect Timeout: {}", config.getConnectTimeoutMs());
         logger.info("Controller Port: {}", config.getControllerPort());
         logger.info("Allocator Type: {}", config.getAllocatorType());
-        logger.info("Known Devices Type: {}", config.getKnownDevicesType());
         logger.info("Whitelist path: {}", config.getWhitelistPath());
-        logger.info("Known Devices Host: {}", config.getKnownDevicesHost());
-        logger.info("Known Devices Port:, {}", config.getKnownDevicesPort());
+
+        scanningExecutorService = Executors.newScheduledThreadPool(5);
+
+        deviceListingConsumers = new ArrayList<>();
+
+        String redisHost = config.getRedisHost();
+
+        int redisPort = config.getRedisPort();
+
+        try {
+
+            config.getDeviceListingConsumers().stream()
+                    .map(DeviceListingConsumerType::valueOf)
+                    .forEach(t -> {
+                        if (t == DeviceListingConsumerType.redis) {
+                            deviceListingConsumers
+                                    .add(new RedisDeviceListingConsumer(
+                                            scanningExecutorService,
+                                            redisHost,
+                                            redisPort));
+                            logger.info("Redis Device Listing Consumer at {}:{}", redisHost, redisPort);
+                        }
+                    });
+
+        } catch (Exception e) {
+            logger.error("Error reading device listing consumers");
+        }
 
         Path knownDevicesFilePath = Paths.get(config.getWhitelistPath());
-
-        scanningExecutorService = Executors.newScheduledThreadPool(3);
 
         availableDevices = new CopyOnWriteArraySet<>();
 
@@ -115,16 +140,7 @@ public class ScanningDaemon implements Controller {
             deviceService = new NativeBle6LowpanIpspService();
         }
 
-        KnownDevicesType knownDevicesType = KnownDevicesType.valueOf(config.getKnownDevicesType());
-
-        switch (knownDevicesType) {
-            case whitelist:
-                knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
-                break;
-            case redis:
-                knownDevices = new RedisKnownDevicesRepository(scanningExecutorService, config.getKnownDevicesHost(), config.getKnownDevicesPort());
-                break;
-        }
+        knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath, deviceListingConsumers);
 
         controllerService = new HttpControllerBroadcaster(this, config.getControllerPort());
     }
@@ -145,6 +161,8 @@ public class ScanningDaemon implements Controller {
 
         knownDevices.stopWatcher();
 
+        deviceListingConsumers.forEach(DeviceListingConsumer::stop);
+
         controllerService.stop();
 
         logger.info("Stopped");
@@ -154,6 +172,8 @@ public class ScanningDaemon implements Controller {
         try {
             logger.info("Starting...");
             controllerService.start();
+
+            deviceListingConsumers.forEach(DeviceListingConsumer::start);
 
             knownDevices.startWatcher();
 
@@ -171,6 +191,12 @@ public class ScanningDaemon implements Controller {
                         new Connector(deviceService, knownDevices, availableDevices, connectedDevices),
                         config.getScanDurationMs(),
                         config.getConnectTimeoutMs(),
+                        TimeUnit.MILLISECONDS);
+
+                scanningExecutorService.scheduleWithFixedDelay(
+                        () -> deviceListingConsumers.forEach(c -> c.accept(knownDevices.getAll())),
+                        0,
+                        5000,
                         TimeUnit.MILLISECONDS);
 
             }

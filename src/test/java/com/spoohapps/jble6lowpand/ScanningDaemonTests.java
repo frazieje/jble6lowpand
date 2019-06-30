@@ -6,6 +6,9 @@ import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -21,7 +24,7 @@ public class ScanningDaemonTests {
         knownDevices = new InMemoryKnownDeviceRepository();
         ipspService = new FakeDeviceService();
         controllerService = new FakeControllerBroadcaster();
-        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), controllerService);
+        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), new ArrayList<>(), controllerService);
         try {
             daemon.start();
         } catch (Exception e) {
@@ -103,8 +106,8 @@ public class ScanningDaemonTests {
         }
 
         @Override
-        public String getKnownDevicesType() {
-            return null;
+        public List<String> getDeviceListingConsumers() {
+            return new ArrayList<>();
         }
 
         @Override
@@ -113,12 +116,12 @@ public class ScanningDaemonTests {
         }
 
         @Override
-        public String getKnownDevicesHost() {
+        public String getRedisHost() {
             return null;
         }
 
         @Override
-        public int getKnownDevicesPort() {
+        public int getRedisPort() {
             return 0;
         }
     }

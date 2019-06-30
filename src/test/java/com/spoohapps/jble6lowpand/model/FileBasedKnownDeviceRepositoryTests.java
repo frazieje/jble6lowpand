@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     @BeforeAll
     public void context() {
-        knownDevices = new FileBasedKnownDeviceRepository(filePath);
+        knownDevices = new FileBasedKnownDeviceRepository(filePath, new ArrayList<>());
         knownDevices.startWatcher();
         try {
         } catch (Exception e) {

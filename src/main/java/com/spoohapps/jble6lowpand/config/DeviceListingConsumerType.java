@@ -1,8 +1,8 @@
 package com.spoohapps.jble6lowpand.config;
 
-public enum KnownDevicesType {
+public enum DeviceListingConsumerType {
 
-    whitelist,
+    http,
 
     redis
 
