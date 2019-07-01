@@ -9,6 +9,7 @@ public class DefaultConfig implements DaemonConfig {
     private static final int defaultTimeBetweenScansMs = 2000;
     private static final int defaultTimeBetweenConnectionAttemptsMs = 2000;
     private static final int defaultControllerPort = 8089;
+    private static final int defaultPublishTimeout = 3000;
 
     private static final String defaultWhitelistPath = "/opt/jble6lowpand/data/knowndevices.conf";
 
@@ -28,19 +29,25 @@ public class DefaultConfig implements DaemonConfig {
     }
 
     @Override
+    public int getPublishTimeoutMs() {
+        return defaultPublishTimeout;
+    }
+
+    @Override
     public int getControllerPort() {
         return defaultControllerPort;
     }
 
     @Override
     public String getAllocatorType() {
-        return DeviceServiceType.native_ble_ipsp.name();
+        return DeviceServiceType.none.name();
     }
 
     @Override
     public List<String> getDeviceListingConsumers() {
         return new ArrayList<>();
     }
+
     @Override
     public String getWhitelistPath() {
         return defaultWhitelistPath;

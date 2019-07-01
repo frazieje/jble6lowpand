@@ -13,7 +13,6 @@ import com.spoohapps.farcommon.model.EUI48Address;
 import io.lettuce.core.api.StatefulRedisConnection;
 
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +24,8 @@ public class RedisDeviceListingConsumer implements DeviceListingConsumer {
     private final CacheProvider cacheProvider;
 
     private final String knownDevicesKey = "knownDevices";
+
+    private final int expiresInSeconds = 10;
 
     public RedisDeviceListingConsumer(ScheduledExecutorService scheduledExecutorService,
                               String host,
@@ -92,7 +93,7 @@ public class RedisDeviceListingConsumer implements DeviceListingConsumer {
         devices.addAll(deviceList);
 
         try {
-            cache.put(knownDevicesKey, devices)
+            cache.put(knownDevicesKey, devices, expiresInSeconds)
                     .get();
         } catch (InterruptedException | ExecutionException e) {
 

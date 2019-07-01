@@ -14,6 +14,9 @@ public interface DaemonConfig {
     @ConfigFlags({"connectTimeout", "c"})
     int getConnectTimeoutMs();
 
+    @ConfigFlags({"publishTimeout", "o"})
+    int getPublishTimeoutMs();
+
     @ConfigFlags({"controllerPort", "p"})
     int getControllerPort();
 

@@ -27,7 +27,7 @@ public class WhenStartingFileBasedKnownDeviceManagerWithNoFileTests {
             Files.delete(filePath);
         } catch (Exception ignored) {}
 
-        knownDevices = new FileBasedKnownDeviceRepository(filePath, new ArrayList<>());
+        knownDevices = new FileBasedKnownDeviceRepository(filePath);
         knownDevices.startWatcher();
     }
 

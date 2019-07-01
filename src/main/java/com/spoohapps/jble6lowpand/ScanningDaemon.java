@@ -15,6 +15,7 @@ import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.RedisDeviceListingConsumer;
 import com.spoohapps.jble6lowpand.tasks.Connector;
+import com.spoohapps.jble6lowpand.tasks.Publisher;
 import com.spoohapps.jble6lowpand.tasks.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,14 +45,11 @@ public class ScanningDaemon implements Controller {
     private final Logger logger = LoggerFactory.getLogger(ScanningDaemon.class);
     private List<DeviceListingConsumer> deviceListingConsumers;
 
-    public ScanningDaemon() {}
-
     public ScanningDaemon(String[] args) {
         initialize(args);
     }
 
     public ScanningDaemon(KnownDeviceRepository knownDeviceRepository, DeviceService deviceService, DaemonConfig config, List<DeviceListingConsumer> deviceListingConsumers, ControllerBroadcaster controllerService) {
-        this.scanningExecutorService = Executors.newScheduledThreadPool(3);
         availableDevices = new CopyOnWriteArraySet<>();
         connectedDevices = new CopyOnWriteArraySet<>();
         this.knownDevices = knownDeviceRepository;
@@ -59,6 +57,7 @@ public class ScanningDaemon implements Controller {
         this.config = config;
         this.controllerService = controllerService;
         this.deviceListingConsumers = deviceListingConsumers;
+        initialize(new String[0]);
     }
 
     public static void main(String[] args) {
@@ -68,31 +67,36 @@ public class ScanningDaemon implements Controller {
 
     private void initialize(String[] args) {
 
-        String configFilePath = null;
-        try {
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("-configFile")) {
-                    configFilePath = args[i + 1];
+        if (config == null) {
+
+            String configFilePath = null;
+
+            try {
+                for (int i = 0; i < args.length; i++) {
+                    if (args[i].equals("-configFile")) {
+                        configFilePath = args[i + 1];
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+
+            ConfigBuilder<DaemonConfig> configBuilder = Config.from(DaemonConfig.class);
+
+            configBuilder.apply(new DefaultConfig());
+
+            if (configFilePath != null) {
+                try (InputStream fileStream = Files.newInputStream(Paths.get(configFilePath))) {
+                    configBuilder.apply(fileStream);
+                } catch (Exception e) {
+                    logger.error("error reading config file", e);
                 }
             }
-        } catch (Exception ignored) {
+
+            configBuilder.apply(args);
+
+            config = configBuilder.build();
+
         }
-
-        ConfigBuilder<DaemonConfig> configBuilder = Config.from(DaemonConfig.class);
-
-        configBuilder.apply(new DefaultConfig());
-
-        if (configFilePath != null) {
-            try (InputStream fileStream = Files.newInputStream(Paths.get(configFilePath))) {
-                configBuilder.apply(fileStream);
-            } catch(Exception e){
-                logger.error("error reading config file", e);
-            }
-        }
-
-        configBuilder.apply(args);
-
-        config = configBuilder.build();
 
         logger.info("Scan Duration: {}", config.getScanDurationMs());
         logger.info("Scan Timeout: {}", config.getScanTimeoutMs());
@@ -101,13 +105,53 @@ public class ScanningDaemon implements Controller {
         logger.info("Allocator Type: {}", config.getAllocatorType());
         logger.info("Whitelist path: {}", config.getWhitelistPath());
 
-        scanningExecutorService = Executors.newScheduledThreadPool(5);
+        if (scanningExecutorService == null) {
 
-        deviceListingConsumers = new ArrayList<>();
+            scanningExecutorService = Executors.newScheduledThreadPool(5);
 
-        String redisHost = config.getRedisHost();
+        }
 
-        int redisPort = config.getRedisPort();
+        if (deviceListingConsumers == null) {
+
+            deviceListingConsumers = new ArrayList<>();
+
+        }
+
+        if (availableDevices == null) {
+
+            availableDevices = new CopyOnWriteArraySet<>();
+
+        }
+
+        if (connectedDevices == null) {
+
+            connectedDevices = new CopyOnWriteArraySet<>();
+
+        }
+
+        if (deviceService == null) {
+
+            DeviceServiceType deviceServiceType = DeviceServiceType.valueOf(config.getAllocatorType());
+
+            if (deviceServiceType == DeviceServiceType.native_ble_ipsp) {
+                deviceService = new NativeBle6LowpanIpspService();
+            }
+
+        }
+
+        if (knownDevices == null) {
+
+            Path knownDevicesFilePath = Paths.get(config.getWhitelistPath());
+
+            knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath);
+
+        }
+
+        if (controllerService == null) {
+
+            controllerService = new HttpControllerBroadcaster(this, config.getControllerPort());
+
+        }
 
         try {
 
@@ -115,12 +159,23 @@ public class ScanningDaemon implements Controller {
                     .map(DeviceListingConsumerType::valueOf)
                     .forEach(t -> {
                         if (t == DeviceListingConsumerType.redis) {
-                            deviceListingConsumers
-                                    .add(new RedisDeviceListingConsumer(
-                                            scanningExecutorService,
-                                            redisHost,
-                                            redisPort));
-                            logger.info("Redis Device Listing Consumer at {}:{}", redisHost, redisPort);
+
+                            String redisHost = config.getRedisHost();
+
+                            int redisPort = config.getRedisPort();
+
+                            if (redisPort > 0 && redisHost != null && !redisHost.equals("")) {
+                                deviceListingConsumers
+                                        .add(new RedisDeviceListingConsumer(
+                                                scanningExecutorService,
+                                                redisHost,
+                                                redisPort));
+
+                                logger.info("Redis Device Listing Consumer at {}:{}", redisHost, redisPort);
+                            } else {
+                                logger.info("Problem loading redis publisher. Check configuration.");
+                            }
+
                         }
                     });
 
@@ -128,21 +183,6 @@ public class ScanningDaemon implements Controller {
             logger.error("Error reading device listing consumers");
         }
 
-        Path knownDevicesFilePath = Paths.get(config.getWhitelistPath());
-
-        availableDevices = new CopyOnWriteArraySet<>();
-
-        connectedDevices = new CopyOnWriteArraySet<>();
-
-        DeviceServiceType deviceServiceType = DeviceServiceType.valueOf(config.getAllocatorType());
-
-        if (deviceServiceType == DeviceServiceType.native_ble_ipsp) {
-            deviceService = new NativeBle6LowpanIpspService();
-        }
-
-        knownDevices = new FileBasedKnownDeviceRepository(knownDevicesFilePath, deviceListingConsumers);
-
-        controllerService = new HttpControllerBroadcaster(this, config.getControllerPort());
     }
 
 	public void stop() {
@@ -181,11 +221,15 @@ public class ScanningDaemon implements Controller {
 
                 deviceService.initializeDevice();
 
+                logger.info("Starting Scanner...");
+
                 scanningExecutorService.scheduleWithFixedDelay(
                         new Scanner(deviceService, config.getScanDurationMs(), availableDevices),
                         0,
                         config.getScanTimeoutMs(),
                         TimeUnit.MILLISECONDS);
+
+                logger.info("Starting Connector...");
 
                 scanningExecutorService.scheduleWithFixedDelay(
                         new Connector(deviceService, knownDevices, availableDevices, connectedDevices),
@@ -193,17 +237,26 @@ public class ScanningDaemon implements Controller {
                         config.getConnectTimeoutMs(),
                         TimeUnit.MILLISECONDS);
 
-                scanningExecutorService.scheduleWithFixedDelay(
-                        () -> deviceListingConsumers.forEach(c -> c.accept(knownDevices.getAll())),
-                        0,
-                        5000,
-                        TimeUnit.MILLISECONDS);
+                if (deviceListingConsumers.size() > 0) {
+
+                    logger.info("Starting Publisher...");
+
+                    scanningExecutorService.scheduleWithFixedDelay(
+                            new Publisher(deviceListingConsumers, knownDevices),
+                            0,
+                            3000,
+                            TimeUnit.MILLISECONDS);
+
+                } else {
+                    logger.info("No Publisher Consumers Configured. Ignoring.");
+                }
 
             }
 
             Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 
             logger.info("Running...");
+
         } catch (Exception e) {
             logger.error(e.getMessage());
             for (StackTraceElement se : e.getStackTrace())

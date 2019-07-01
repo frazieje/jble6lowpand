@@ -2,11 +2,13 @@ package com.spoohapps.jble6lowpand;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
+import com.spoohapps.jble6lowpand.model.DeviceListingConsumer;
 import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,12 +21,14 @@ public class ScanningDaemonTests {
     private FakeDeviceService ipspService;
     private ControllerBroadcaster controllerService;
 
+    private List<DeviceListingConsumer> deviceListingConsumerList = new ArrayList<>();
+
     @BeforeAll
     public void context() {
         knownDevices = new InMemoryKnownDeviceRepository();
         ipspService = new FakeDeviceService();
         controllerService = new FakeControllerBroadcaster();
-        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), new ArrayList<>(), controllerService);
+        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), deviceListingConsumerList, controllerService);
         try {
             daemon.start();
         } catch (Exception e) {
@@ -78,6 +82,12 @@ public class ScanningDaemonTests {
         assertTrue(daemon.getAvailableDevices().size() > 0);
     }
 
+    @Test
+    public void shouldInitializeDeviceListingConsumers() {
+        sleep(500);
+        assertTrue(deviceListingConsumerList.size() > 0);
+    }
+
     class TestDaemonConfig implements DaemonConfig {
 
         @Override
@@ -96,6 +106,11 @@ public class ScanningDaemonTests {
         }
 
         @Override
+        public int getPublishTimeoutMs() {
+            return 200;
+        }
+
+        @Override
         public int getControllerPort() {
             return 1099;
         }
@@ -107,7 +122,7 @@ public class ScanningDaemonTests {
 
         @Override
         public List<String> getDeviceListingConsumers() {
-            return new ArrayList<>();
+            return Collections.singletonList("redis");
         }
 
         @Override
@@ -117,12 +132,12 @@ public class ScanningDaemonTests {
 
         @Override
         public String getRedisHost() {
-            return null;
+            return "somehost";
         }
 
         @Override
         public int getRedisPort() {
-            return 0;
+            return 100;
         }
     }
 

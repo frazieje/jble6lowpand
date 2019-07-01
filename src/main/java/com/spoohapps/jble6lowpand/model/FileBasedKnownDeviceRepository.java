@@ -20,17 +20,14 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	private final WhitelistFileWatcher watcher;
 	private final Path filePath;
 
-	private Set<EUI48Address> knownDevices;
+	private volatile Set<EUI48Address> knownDevices;
 
     private final Logger logger = LoggerFactory.getLogger(FileBasedKnownDeviceRepository.class);
 
-    private final List<DeviceListingConsumer> deviceListingConsumers;
-
-    public FileBasedKnownDeviceRepository(Path filePath, List<DeviceListingConsumer> deviceListingConsumers) {
+    public FileBasedKnownDeviceRepository(Path filePath) {
 		this.watcher = new WhitelistFileWatcher(filePath, this::onFileChanged);
 		this.filePath = filePath;
 		knownDevices = new CopyOnWriteArraySet<>();
-		this.deviceListingConsumers = deviceListingConsumers;
 	}
 
 	public void startWatcher() {
@@ -52,8 +49,6 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 
     private synchronized void onFileChanged() {
         logger.trace("known devices file changed");
-        Set<EUI48Address> addresses = getStoredAddresses();
-        deviceListingConsumers.forEach(c -> c.accept(addresses));
         knownDevices = new CopyOnWriteArraySet<>(getStoredAddresses());
     }
 

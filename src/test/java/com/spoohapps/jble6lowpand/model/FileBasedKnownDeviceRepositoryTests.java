@@ -26,7 +26,7 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     @BeforeAll
     public void context() {
-        knownDevices = new FileBasedKnownDeviceRepository(filePath, new ArrayList<>());
+        knownDevices = new FileBasedKnownDeviceRepository(filePath);
         knownDevices.startWatcher();
         try {
         } catch (Exception e) {
