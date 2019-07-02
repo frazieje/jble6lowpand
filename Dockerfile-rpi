@@ -48,6 +48,6 @@ WORKDIR /opt/jble6lowpand
 
 RUN rm -rf jni/
 
-CMD hciconfig hci0 reset && bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
+CMD bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
 
 #RUN [ "cross-build-end" ]
