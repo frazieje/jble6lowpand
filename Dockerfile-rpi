@@ -1,4 +1,4 @@
-FROM gradle:jdk8 as javabuilder
+FROM gradle:4.10.3-jdk8 as javabuilder
 
 COPY --chown=gradle:gradle . /home/gradle/src
 
@@ -6,9 +6,7 @@ WORKDIR /home/gradle/src
 
 RUN gradle build -x test
 
-FROM resin/raspberry-pi-openjdk:8-jdk
-
-#RUN [ "cross-build-start" ]
+FROM balenalib/raspberry-pi-openjdk:8-jdk
 
 EXPOSE 8089
 
@@ -49,5 +47,3 @@ WORKDIR /opt/jble6lowpand
 RUN rm -rf jni/
 
 CMD bin/jble6lowpand -configFile /opt/jble6lowpand/jble6lowpand.conf
-
-#RUN [ "cross-build-end" ]
