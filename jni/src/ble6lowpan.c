@@ -37,13 +37,13 @@
 
 #define CONTROLLER_PATH           "/opt/jble6lowpand/bin/6lowpan_control"
 
-#define ERR_SET_SCAN_PARAMETER_FAILED       1
-#define ERR_ENABLE_SCAN_FAILED              2
-#define ERR_DISABLE_SCAN_FAILED             4
-#define ERR_OPENING_HCI_DEV                 8
-#define ERR_POLLING_HCI_DEV                 16
-#define ERR_RETRIEVING_SOCKET_OPTIONS       32
-#define ERR_COULD_NOT_FIND_HCI_DEV          64
+#define ERR_SET_SCAN_PARAMETER_FAILED       -1
+#define ERR_ENABLE_SCAN_FAILED              -2
+#define ERR_DISABLE_SCAN_FAILED             -4
+#define ERR_OPENING_HCI_DEV                 -8
+#define ERR_POLLING_HCI_DEV                 -16
+#define ERR_RETRIEVING_SOCKET_OPTIONS       -32
+#define ERR_COULD_NOT_FIND_HCI_DEV          -64
 
 static volatile int signal_received;
 
@@ -121,6 +121,8 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 	start_time = time(NULL);
 
     int dd = hci_open_dev(dev_id);
+
+    printf("scanning .. dd = %d", dd);
 
     if (dd < 0) {
         perror("Could not open hci device");
@@ -234,10 +236,12 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 
     }
 
-	if (err_code > 0) {
+	if (err_code < 0) {
+	    printf("scanning returning = error");
 	    return err_code;
 	}
 
+    printf("scanning returning = success");
 	return client_i;
 }
 
