@@ -122,8 +122,6 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 
     int dd = hci_open_dev(dev_id);
 
-    printf("scanning .. dd = %d\n", dd);
-
     if (dd < 0) {
         perror("Could not open hci device");
         err_code = ERR_OPENING_HCI_DEV;
@@ -241,13 +239,9 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
     }
 
 	if (err_code < 0) {
-	    printf("scanning returning = error\n");
-	    fflush(stdout);
 	    return err_code;
 	}
 
-    printf("scanning returning = success\n");
-    fflush(stdout);
 	return client_i;
 }
 
