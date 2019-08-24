@@ -37,7 +37,13 @@
 
 #define CONTROLLER_PATH           "/opt/jble6lowpand/bin/6lowpan_control"
 
-static int dev_id = -1;
+#define ERR_SET_SCAN_PARAMETER_FAILED = -1;
+#define ERR_ENABLE_SCAN_FAILED = -2;
+#define ERR_DISABLE_SCAN_FAILED = -4;
+#define ERR_OPENING_HCI_DEV = -8;
+#define ERR_POLLING_HCI_DEV = -16;
+#define ERR_RETRIEVING_SOCKET_OPTIONS = -32;
+#define ERR_COULD_NOT_FIND_HCI_DEV = -64;
 
 static volatile int signal_received;
 
@@ -87,7 +93,7 @@ static bool parse_ip_service(uint8_t *eir, size_t eir_len, char *buf, size_t buf
 	return ipsp_service;
 }
 
-static int scan_ipsp_device(int timeout, char addresses[][DEVICE_ADDR_LEN], char names[][DEVICE_NAME_LEN]) {
+static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADDR_LEN], char names[][DEVICE_NAME_LEN]) {
 
 	uint8_t own_type = LE_PUBLIC_ADDRESS;
 	uint8_t scan_type = 0x01; /* Active scanning. */
@@ -110,119 +116,129 @@ static int scan_ipsp_device(int timeout, char addresses[][DEVICE_ADDR_LEN], char
 
 	int client_i = 0;
 
+	int errCode = 0;
+
+	int err;
+
 	start_time = time(NULL);
 
-	int dd;
+    int dd = hci_open_dev(dev_id);
 
-	dev_id = hci_get_route(NULL);
-	if (dev_id < 0) {
-		perror("Could not find hci device");
-		return false;
+    if (dd < 0) {
+        perror("Could not open hci device");
+        err_code = ERR_OPENING_HCI_DEV;
+    } else {
+
+        err = hci_le_set_scan_parameters(dd, scan_type, interval, window, own_type, filter_policy, 10000);
+        if (err < 0) {
+            perror("Set scan parameters failed");
+            err_code = ERR_SET_SCAN_PARAMETER_FAILED;
+        } else {
+
+            err = hci_le_set_scan_enable(dd, 0x01, filter_dup, 10000);
+            if (err < 0) {
+                perror("Enable scan failed");
+                err_code = ERR_ENABLE_SCAN_FAILED;
+            } else {
+
+                olen = sizeof(of);
+                if (getsockopt(dd, SOL_HCI, HCI_FILTER, &of, &olen) < 0) {
+                    printf("Could not get socket options\n");
+                    err_code = ERR_RETRIEVING_SOCKET_OPTIONS;
+                } else {
+                    hci_filter_clear(&nf);
+                    hci_filter_set_ptype(HCI_EVENT_PKT, &nf);
+                    hci_filter_set_event(EVT_LE_META_EVENT, &nf);
+
+                    if (setsockopt(dd, SOL_HCI, HCI_FILTER, &nf, sizeof(nf)) < 0) {
+                        printf("Could not set socket options\n");
+                    }
+
+                    memset(&sa, 0, sizeof(sa));
+                    sa.sa_flags = SA_NOCLDSTOP;
+                    sa.sa_handler = sigint_handler;
+                    sigaction(SIGINT, &sa, NULL);
+
+                    while (timeout > 0 && client_i < MAX_BLE_CONN) {
+                        evt_le_meta_event *meta;
+                        le_advertising_info *info;
+                        char addr[DEVICE_ADDR_LEN];
+                        char name[DEVICE_NAME_LEN];
+
+                        curr_time = time(NULL);
+                        running_time = difftime(curr_time, start_time);
+
+                        if (running_time > timeout)
+                            break;
+
+                        memset(name, 0, sizeof(name));
+                        memset(addr, 0, sizeof(addr));
+                        memset(buf, 0, sizeof(buf));
+
+                        pollfd.fd = dd;
+                        pollfd.events = POLLIN;
+
+                        poll_ret = poll(&pollfd, 1, (timeout - running_time)*1000);
+                        if (poll_ret < 0) {
+                            printf("poll hci dev error\n");
+                            break;
+                        } else if (poll_ret == 0) {
+                            /* poll timeout */
+                            break;
+                        } else {
+                            if (pollfd.revents & POLLIN) {
+                                while ((read(dd, buf, sizeof(buf))) < 0) {
+                                    if (errno == EINTR && signal_received == SIGINT)
+                                        timeout = -1; break;
+
+                                    if (errno == EAGAIN || errno == EINTR)
+                                        continue;
+
+                                    timeout = -1; break;
+                                }
+                                if (timeout < 0)
+                                    break;
+                            }
+                        }
+
+                        ptr = buf + (1 + HCI_EVENT_HDR_SIZE);
+                        meta = (void *) ptr;
+
+                        if (meta->subevent != EVT_LE_ADVERTISING_REPORT)
+                            continue;
+
+                        info = (le_advertising_info *) (meta->data + 1);
+
+                        ba2str(&info->bdaddr, addr);
+                        if (parse_ip_service(info->data, info->length, name, sizeof(name) - 1)) {
+                            memcpy(names[client_i], name, sizeof(name));
+                            memcpy(addresses[client_i], addr, sizeof(addr));
+                            client_i++;
+                        }
+                    }
+                }
+
+                setsockopt(dd, SOL_HCI, HCI_FILTER, &of, sizeof(of));
+
+                err = hci_le_set_scan_enable(dd, 0x00, filter_dup, 10000);
+                if (err < 0) {
+                    perror("Disable scan failed");
+                    err_code = ERR_DISABLE_SCAN_FAILED;
+                }
+
+            }
+
+        }
+
+        if (dd >= 0) {
+            hci_close_dev(dd);
+        }
+
+    }
+
+	if (err_code < 0) {
+	    return err_code;
 	}
-
-	dd = hci_open_dev(dev_id);
-	if (dd < 0) {
-		perror("Could not open hci device");
-		return false;
-	}
-
-	err = hci_le_set_scan_parameters(dd, scan_type, interval, window, own_type, filter_policy, 10000);
-	if (err < 0) {
-		perror("Set scan parameters failed");
-		return false;
-	}
-
-	err = hci_le_set_scan_enable(dd, 0x01, filter_dup, 10000);
-	if (err < 0) {
-		perror("Enable scan failed");
-		return false;
-	}
-
-	olen = sizeof(of);
-	if (getsockopt(dd, SOL_HCI, HCI_FILTER, &of, &olen) < 0) {
-		printf("Could not get socket options\n");
-	} else {
-		hci_filter_clear(&nf);
-		hci_filter_set_ptype(HCI_EVENT_PKT, &nf);
-		hci_filter_set_event(EVT_LE_META_EVENT, &nf);
-
-		if (setsockopt(dd, SOL_HCI, HCI_FILTER, &nf, sizeof(nf)) < 0) {
-			printf("Could not set socket options\n");
-		}
-
-		memset(&sa, 0, sizeof(sa));
-		sa.sa_flags = SA_NOCLDSTOP;
-		sa.sa_handler = sigint_handler;
-		sigaction(SIGINT, &sa, NULL);
-
-		while (timeout > 0 && client_i < MAX_BLE_CONN) {
-			evt_le_meta_event *meta;
-			le_advertising_info *info;
-			char addr[DEVICE_ADDR_LEN];
-			char name[DEVICE_NAME_LEN];
-
-			curr_time = time(NULL);
-			running_time = difftime(curr_time, start_time);
-
-			if (running_time > timeout)
-				break;
-
-			memset(name, 0, sizeof(name));
-			memset(addr, 0, sizeof(addr));
-			memset(buf, 0, sizeof(buf));
-
-			pollfd.fd = dd;
-			pollfd.events = POLLIN;
-
-			poll_ret = poll(&pollfd, 1, (timeout - running_time)*1000);
-			if (poll_ret < 0) {
-				printf("poll hci dev error\n");
-				break;
-			} else if (poll_ret == 0) {
-				/* poll timeout */
-				break;
-			} else {
-				if (pollfd.revents & POLLIN) {
-					while ((read(dd, buf, sizeof(buf))) < 0) {
-						if (errno == EINTR && signal_received == SIGINT)
-							timeout = -1; break;
-
-						if (errno == EAGAIN || errno == EINTR)
-							continue;
-
-						timeout = -1; break;
-					}
-					if (timeout < 0)
-						break;
-				}
-			}
-
-			ptr = buf + (1 + HCI_EVENT_HDR_SIZE);
-			meta = (void *) ptr;
-
-			if (meta->subevent != EVT_LE_ADVERTISING_REPORT)
-				continue;
-
-			info = (le_advertising_info *) (meta->data + 1);
-
-			ba2str(&info->bdaddr, addr);
-			if (parse_ip_service(info->data, info->length, name, sizeof(name) - 1)) {
-				memcpy(names[client_i], name, sizeof(name));
-				memcpy(addresses[client_i], addr, sizeof(addr));
-				client_i++;
-			}
-		}
-	}
-
-	setsockopt(dd, SOL_HCI, HCI_FILTER, &of, sizeof(of));
-	err = hci_le_set_scan_enable(dd, 0x00, filter_dup, 10000);
-	if (err < 0) {
-		perror("Disable scan failed");
-		return false;
-	}
-
-	if (dd >= 0)
-		hci_close_dev(dd);
 
 	return client_i;
 }
@@ -291,7 +307,8 @@ static bool reset_device() {
 
     bool ret = true;
 
-    dev_id = hci_get_route(NULL);
+    int dev_id = hci_get_route(NULL);
+
 	if (dev_id < 0) {
 		perror("Could not find hci device");
 		ret = false;
@@ -321,15 +338,35 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
     int i;
     char addresses[MAX_BLE_CONN][DEVICE_ADDR_LEN];
     char names[MAX_BLE_CONN][DEVICE_NAME_LEN];
-    int num = scan_ipsp_device(timeout, addresses, names);
 
-    jclass cls = (*env)->FindClass(env, "com/spoohapps/farcommon/model/EUI48Address");
-    ret = (jobjectArray)(*env)->NewObjectArray(env, num, cls, NULL);
-    jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+    int err_code = 0;
 
-    for (i = 0; i < num; i++) {
-        jobject object = (*env)->NewObject(env, cls, constructor, (*env)->NewStringUTF(env, addresses[i]), (*env)->NewStringUTF(env, names[i]));
-    	(*env)->SetObjectArrayElement(env, ret, i, object);
+	int dev_id = hci_get_route(NULL);
+
+    if (dev_id < 0) {
+        perror("Could not find hci device");
+        err_code = ERR_COULD_NOT_FIND_HCI_DEV;
+    } else {
+
+    int num = scan_ipsp_device(dev_id, timeout, addresses, names);
+
+    if (num >= 0) {
+
+        jclass cls = (*env)->FindClass(env, "com/spoohapps/farcommon/model/EUI48Address");
+        ret = (jobjectArray)(*env)->NewObjectArray(env, num, cls, NULL);
+        jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
+
+        for (i = 0; i < num; i++) {
+            jobject object = (*env)->NewObject(env, cls, constructor, (*env)->NewStringUTF(env, addresses[i]), (*env)->NewStringUTF(env, names[i]));
+            (*env)->SetObjectArrayElement(env, ret, i, object);
+        }
+
+    } else {
+
+        jclass exception = env->FindClass("com/spoohapps/jble6lowpand/NativeBle6LowpanIpspException");
+        jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(I)V");
+        env->Throw(exception);
+
     }
     return ret;
 }
