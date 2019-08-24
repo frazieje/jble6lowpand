@@ -5,7 +5,7 @@ import java.util.List;
 
 public class DefaultConfig implements DaemonConfig {
 
-    private static final int defaultScanDurationMs = 4000;
+    private static final int defaultScanDurationMs = 3000;
     private static final int defaultTimeBetweenScansMs = 1000;
     private static final int defaultTimeBetweenConnectionAttemptsMs = 2000;
     private static final int defaultTimeBetweenDisconnectionAttemptsMs = 2000;
