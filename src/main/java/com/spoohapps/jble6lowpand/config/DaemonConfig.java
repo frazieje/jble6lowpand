@@ -14,6 +14,9 @@ public interface DaemonConfig {
     @ConfigFlags({"connectTimeout", "c"})
     int getConnectTimeoutMs();
 
+    @ConfigFlags({"disconnectTimeout", "v"})
+    int getDisconnectTimeoutMs();
+
     @ConfigFlags({"publishTimeout", "o"})
     int getPublishTimeoutMs();
 

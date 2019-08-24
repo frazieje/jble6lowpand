@@ -122,7 +122,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 
     int dd = hci_open_dev(dev_id);
 
-    printf("scanning .. dd = %d", dd);
+    printf("scanning .. dd = %d\n", dd);
 
     if (dd < 0) {
         perror("Could not open hci device");
@@ -144,6 +144,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
                 olen = sizeof(of);
                 if (getsockopt(dd, SOL_HCI, HCI_FILTER, &of, &olen) < 0) {
                     printf("Could not get socket options\n");
+                    fflush(stdout);
                     err_code = ERR_RETRIEVING_SOCKET_OPTIONS;
                 } else {
                     hci_filter_clear(&nf);
@@ -152,6 +153,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 
                     if (setsockopt(dd, SOL_HCI, HCI_FILTER, &nf, sizeof(nf)) < 0) {
                         printf("Could not set socket options\n");
+                        fflush(stdout);
                     }
 
                     memset(&sa, 0, sizeof(sa));
@@ -181,6 +183,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
                         poll_ret = poll(&pollfd, 1, (timeout - running_time)*1000);
                         if (poll_ret < 0) {
                             printf("poll hci dev error\n");
+                            fflush(stdout);
                             break;
                         } else if (poll_ret == 0) {
                             /* poll timeout */
@@ -210,6 +213,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
                         info = (le_advertising_info *) (meta->data + 1);
 
                         ba2str(&info->bdaddr, addr);
+
                         if (parse_ip_service(info->data, info->length, name, sizeof(name) - 1)) {
                             memcpy(names[client_i], name, sizeof(name));
                             memcpy(addresses[client_i], addr, sizeof(addr));
@@ -237,11 +241,13 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
     }
 
 	if (err_code < 0) {
-	    printf("scanning returning = error");
+	    printf("scanning returning = error\n");
+	    fflush(stdout);
 	    return err_code;
 	}
 
-    printf("scanning returning = success");
+    printf("scanning returning = success\n");
+    fflush(stdout);
 	return client_i;
 }
 
@@ -369,7 +375,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
 
         jclass exception = (*env)->FindClass(env, "com/spoohapps/jble6lowpand/NativeBle6LowpanIpspException");
         jmethodID constructor = (*env)->GetMethodID(env, exception, "<init>", "(I)V");
-        (*env)->Throw(env, exception);
+        jobject exceptionObject = (*env)->NewObject(env, exception, constructor, num);
+        (*env)->Throw(env, exceptionObject);
 
     }
     return ret;

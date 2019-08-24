@@ -49,7 +49,6 @@ public class ScanningDaemonTests {
                 controllerService,
                 mock(RedisCacheProvider.class),
                 null,
-                null,
                 knownDevicesManagerMock);
         try {
             daemon.start();
@@ -124,6 +123,11 @@ public class ScanningDaemonTests {
 
         @Override
         public int getConnectTimeoutMs() {
+            return 100;
+        }
+
+        @Override
+        public int getDisconnectTimeoutMs() {
             return 100;
         }
 

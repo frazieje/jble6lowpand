@@ -17,13 +17,9 @@ import com.spoohapps.jble6lowpand.config.DeviceServiceType;
 import com.spoohapps.jble6lowpand.controller.Controller;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
 import com.spoohapps.jble6lowpand.controller.HttpControllerBroadcaster;
-import com.spoohapps.jble6lowpand.manager.AvailableDevicesManager;
-import com.spoohapps.jble6lowpand.manager.ConnectedDevicesManager;
+import com.spoohapps.jble6lowpand.manager.DeviceServiceManager;
 import com.spoohapps.jble6lowpand.manager.KnownDevicesManager;
-import com.spoohapps.jble6lowpand.model.DeviceListingConsumer;
-import com.spoohapps.jble6lowpand.model.FileBasedKnownDeviceRepository;
-import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
-import com.spoohapps.jble6lowpand.model.CachedDeviceListingConsumer;
+import com.spoohapps.jble6lowpand.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +40,7 @@ public class ScanningDaemon implements Controller {
 
     private ScheduledExecutorService workerExecutorService;
 
-    private Manager<Set<EUI48Address>> availableDevicesManager;
-
-    private Manager<Set<EUI48Address>> connectedDevicesManager;
+    private Manager<DeviceServiceStatus> deviceServiceManager;
 
     private Manager<Set<EUI48Address>> knownDevicesManager;
 
@@ -73,16 +67,14 @@ public class ScanningDaemon implements Controller {
             List<DeviceListingConsumer> deviceListingConsumers,
             ControllerBroadcaster controllerService,
             CacheProvider cacheProvider,
-            Manager<Set<EUI48Address>> availableDevicesManager,
-            Manager<Set<EUI48Address>> connectedDevicesManager,
+            Manager<DeviceServiceStatus> deviceServiceManager,
             Manager<Set<EUI48Address>> knownDevicesManager) {
         this.knownDevices = knownDeviceRepository;
         this.deviceService = deviceService;
         this.config = config;
         this.controllerService = controllerService;
         this.deviceListingConsumers = deviceListingConsumers;
-        this.availableDevicesManager = availableDevicesManager;
-        this.connectedDevicesManager = connectedDevicesManager;
+        this.deviceServiceManager = deviceServiceManager;
         this.knownDevicesManager = knownDevicesManager;
         this.cacheProvider = cacheProvider;
         initialize(new String[0]);
@@ -179,9 +171,9 @@ public class ScanningDaemon implements Controller {
 
         }
 
-        if (availableDevicesManager == null) {
+        if (deviceServiceManager == null) {
 
-            ManagerSettings scannerSettings = new ManagerSettings() {
+            ManagerSettings deviceServiceManagerSettings = new ManagerSettings() {
                 @Override
                 public long startDelay() {
                     return 0;
@@ -203,46 +195,15 @@ public class ScanningDaemon implements Controller {
                 }
             };
 
-            availableDevicesManager =
-                    new AvailableDevicesManager(
+            deviceServiceManager =
+                    new DeviceServiceManager(
                             scanningExecutorService,
-                            scannerSettings,
+                            deviceServiceManagerSettings,
                             deviceService,
-                            config.getScanDurationMs());
-
-        }
-
-        if (connectedDevicesManager == null) {
-
-            ManagerSettings connectorSettings = new ManagerSettings() {
-                @Override
-                public long startDelay() {
-                    return config.getScanDurationMs();
-                }
-
-                @Override
-                public TimeUnit startDelayTimeUnit() {
-                    return TimeUnit.MILLISECONDS;
-                }
-
-                @Override
-                public long timeout() {
-                    return config.getConnectTimeoutMs();
-                }
-
-                @Override
-                public TimeUnit timeoutTimeUnit() {
-                    return TimeUnit.MILLISECONDS;
-                }
-            };
-
-            connectedDevicesManager =
-                    new ConnectedDevicesManager(
-                            workerExecutorService,
-                            connectorSettings,
-                            () -> availableDevicesManager.getResource(),
-                            deviceService,
-                            knownDevices);
+                            knownDevices,
+                            config.getScanDurationMs(),
+                            config.getConnectTimeoutMs(),
+                            config.getDisconnectTimeoutMs());
 
         }
 
@@ -354,9 +315,7 @@ public class ScanningDaemon implements Controller {
 
         stopExecutor(workerExecutorService, "worker");
 
-        availableDevicesManager.stop();
-
-        connectedDevicesManager.stop();
+        deviceServiceManager.stop();
 
         knownDevicesManager.stop();
 
@@ -396,11 +355,7 @@ public class ScanningDaemon implements Controller {
 
                 logger.info("Starting Scanner...");
 
-                availableDevicesManager.start();
-
-                logger.info("Starting Connector...");
-
-                connectedDevicesManager.start();
+                deviceServiceManager.start();
 
                 if (deviceListingConsumers.size() > 0) {
 
@@ -430,7 +385,7 @@ public class ScanningDaemon implements Controller {
 
     @Override
     public Set<EUI48Address> getAvailableDevices() {
-        return availableDevicesManager.getResource();
+        return deviceServiceManager.getResource().getAvailableDevices();
     }
 
     @Override
@@ -440,7 +395,7 @@ public class ScanningDaemon implements Controller {
 
     @Override
     public Set<EUI48Address> getConnectedDevices() {
-        return connectedDevicesManager.getResource();
+        return deviceServiceManager.getResource().getConnectedDevices();
     }
 
     @Override

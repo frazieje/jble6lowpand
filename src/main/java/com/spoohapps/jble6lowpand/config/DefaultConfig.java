@@ -5,9 +5,10 @@ import java.util.List;
 
 public class DefaultConfig implements DaemonConfig {
 
-    private static final int defaultScanDurationMs = 3000;
+    private static final int defaultScanDurationMs = 4000;
     private static final int defaultTimeBetweenScansMs = 2000;
     private static final int defaultTimeBetweenConnectionAttemptsMs = 2000;
+    private static final int defaultTimeBetweenDisconnectionAttemptsMs = 2000;
     private static final int defaultControllerPort = 8089;
     private static final int defaultPublishTimeout = 3000;
 
@@ -26,6 +27,11 @@ public class DefaultConfig implements DaemonConfig {
     @Override
     public int getConnectTimeoutMs() {
         return defaultTimeBetweenConnectionAttemptsMs;
+    }
+
+    @Override
+    public int getDisconnectTimeoutMs() {
+        return defaultTimeBetweenDisconnectionAttemptsMs;
     }
 
     @Override
