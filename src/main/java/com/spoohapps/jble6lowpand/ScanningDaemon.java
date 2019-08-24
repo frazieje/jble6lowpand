@@ -251,7 +251,7 @@ public class ScanningDaemon implements Controller {
             ManagerSettings knownDevicesSettings = new ManagerSettings() {
                 @Override
                 public long startDelay() {
-                    return 0;
+                    return 10;
                 }
 
                 @Override

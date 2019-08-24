@@ -42,7 +42,6 @@ public class ConnectedDevicesManager extends AbstractManager<Set<EUI48Address>> 
 
     @Override
     protected void doProcess() {
-
         for (EUI48Address address : deviceSetFactory.get()) {
             if (knownDevices.contains(address) && !connectedDevices.contains(address)) {
                 logger.info("Connecting to {} ... ", address.toString());
