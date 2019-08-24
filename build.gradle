@@ -50,6 +50,8 @@ dependencies {
     
     testCompile group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.2'
 
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.27.0'
+
 }
 
 jar {

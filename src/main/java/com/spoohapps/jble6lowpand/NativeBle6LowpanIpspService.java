@@ -20,15 +20,15 @@ public class NativeBle6LowpanIpspService implements DeviceService {
 	private native EUI48Address[] scanDevicesInternal(int timeoutSeconds) throws NativeBle6LowpanIpspException;
 
 	@Override
-	public native boolean connectDevice(EUI48Address address);
+	public native boolean connectDevice(EUI48Address address) throws NativeBle6LowpanIpspException;
 
 	@Override
-	public native boolean disconnectDevice(EUI48Address address);
+	public native boolean disconnectDevice(EUI48Address address) throws NativeBle6LowpanIpspException;
 
 	@Override
-	public native EUI48Address[] getConnectedDevices();
+	public native EUI48Address[] getConnectedDevices() throws NativeBle6LowpanIpspException;
 
 	@Override
-	public native boolean initializeDevice();
+	public native boolean initializeDevice() throws NativeBle6LowpanIpspException;
 	
 }

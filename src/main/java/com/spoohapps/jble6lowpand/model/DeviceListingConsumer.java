@@ -7,8 +7,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface DeviceListingConsumer {
 
-    public void start();
-    public void stop();
     void accept(Set<EUI48Address> deviceList);
 
 }

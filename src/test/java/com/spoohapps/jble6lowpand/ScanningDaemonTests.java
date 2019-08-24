@@ -1,4 +1,6 @@
 package com.spoohapps.jble6lowpand;
+import com.spoohapps.farcommon.cache.RedisCacheProvider;
+import com.spoohapps.farcommon.manager.Manager;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
@@ -6,12 +8,16 @@ import com.spoohapps.jble6lowpand.model.DeviceListingConsumer;
 import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ScanningDaemonTests {
@@ -23,12 +29,28 @@ public class ScanningDaemonTests {
 
     private List<DeviceListingConsumer> deviceListingConsumerList = new ArrayList<>();
 
+    @Mock
+    Manager<Set<EUI48Address>> knownDevicesManagerMock;
+
     @BeforeAll
     public void context() {
+
+        MockitoAnnotations.initMocks(this);
+
         knownDevices = new InMemoryKnownDeviceRepository();
         ipspService = new FakeDeviceService();
         controllerService = new FakeControllerBroadcaster();
-        daemon = new ScanningDaemon(knownDevices, ipspService, new TestDaemonConfig(), deviceListingConsumerList, controllerService);
+
+        daemon = new ScanningDaemon(
+                knownDevices,
+                ipspService,
+                new TestDaemonConfig(),
+                deviceListingConsumerList,
+                controllerService,
+                mock(RedisCacheProvider.class),
+                null,
+                null,
+                knownDevicesManagerMock);
         try {
             daemon.start();
         } catch (Exception e) {

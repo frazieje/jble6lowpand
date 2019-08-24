@@ -1,5 +1,7 @@
-package com.spoohapps.jble6lowpand.tasks;
+package com.spoohapps.jble6lowpand.manager;
 
+import com.spoohapps.farcommon.manager.AbstractManager;
+import com.spoohapps.farcommon.manager.ManagerSettings;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.DeviceService;
 import org.slf4j.Logger;
@@ -8,23 +10,25 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledExecutorService;
 
-public class Scanner implements Runnable {
+public class AvailableDevicesManager extends AbstractManager<Set<EUI48Address>> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AvailableDevicesManager.class);
 
     private final CopyOnWriteArraySet<EUI48Address> availableDevices;
     private final DeviceService deviceService;
     private final int scanDurationSeconds;
 
-    private final Logger logger = LoggerFactory.getLogger(Scanner.class);
-
-    public Scanner(DeviceService deviceService, int scanDurationSeconds, CopyOnWriteArraySet<EUI48Address> availableDevices) {
+    public AvailableDevicesManager(ScheduledExecutorService executorService, ManagerSettings managerSettings, DeviceService deviceService, int scanDurationSeconds) {
+        super(executorService, managerSettings);
+        availableDevices = new CopyOnWriteArraySet<>();
         this.deviceService = deviceService;
-        this.availableDevices = availableDevices;
         this.scanDurationSeconds = scanDurationSeconds;
     }
 
     @Override
-    public void run() {
+    protected void doProcess() {
         logger.trace("Scanning for devices");
         try {
             EUI48Address[] devices = deviceService.scanDevices(scanDurationSeconds);
@@ -44,5 +48,10 @@ public class Scanner implements Runnable {
             logger.trace("Error in scanner", e);
         }
         logger.trace("Done scanning");
+    }
+
+    @Override
+    protected Set<EUI48Address> doGetResource() {
+        return availableDevices;
     }
 }

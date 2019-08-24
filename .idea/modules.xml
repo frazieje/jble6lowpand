@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jble6lowpand.iml" filepath="$PROJECT_DIR$/.idea/modules/jble6lowpand.iml" group="jble6lowpand" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jble6lowpand_main.iml" filepath="$PROJECT_DIR$/.idea/modules/jble6lowpand_main.iml" group="jble6lowpand" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jble6lowpand_test.iml" filepath="$PROJECT_DIR$/.idea/modules/jble6lowpand_test.iml" group="jble6lowpand" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jble6lowpand.iml" filepath="$PROJECT_DIR$/.idea/modules/jble6lowpand.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jble6lowpand.main.iml" filepath="$PROJECT_DIR$/.idea/modules/jble6lowpand.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jble6lowpand.test.iml" filepath="$PROJECT_DIR$/.idea/modules/jble6lowpand.test.iml" />
     </modules>
   </component>
 </project>

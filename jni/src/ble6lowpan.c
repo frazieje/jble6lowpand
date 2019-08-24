@@ -37,13 +37,13 @@
 
 #define CONTROLLER_PATH           "/opt/jble6lowpand/bin/6lowpan_control"
 
-#define ERR_SET_SCAN_PARAMETER_FAILED = -1;
-#define ERR_ENABLE_SCAN_FAILED = -2;
-#define ERR_DISABLE_SCAN_FAILED = -4;
-#define ERR_OPENING_HCI_DEV = -8;
-#define ERR_POLLING_HCI_DEV = -16;
-#define ERR_RETRIEVING_SOCKET_OPTIONS = -32;
-#define ERR_COULD_NOT_FIND_HCI_DEV = -64;
+#define ERR_SET_SCAN_PARAMETER_FAILED       1
+#define ERR_ENABLE_SCAN_FAILED              2
+#define ERR_DISABLE_SCAN_FAILED             4
+#define ERR_OPENING_HCI_DEV                 8
+#define ERR_POLLING_HCI_DEV                 16
+#define ERR_RETRIEVING_SOCKET_OPTIONS       32
+#define ERR_COULD_NOT_FIND_HCI_DEV          64
 
 static volatile int signal_received;
 
@@ -116,9 +116,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 
 	int client_i = 0;
 
-	int errCode = 0;
-
-	int err;
+	int err_code = 0;
 
 	start_time = time(NULL);
 
@@ -236,7 +234,7 @@ static int scan_ipsp_device(int dev_id, int timeout, char addresses[][DEVICE_ADD
 
     }
 
-	if (err_code < 0) {
+	if (err_code > 0) {
 	    return err_code;
 	}
 
@@ -339,16 +337,18 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
     char addresses[MAX_BLE_CONN][DEVICE_ADDR_LEN];
     char names[MAX_BLE_CONN][DEVICE_NAME_LEN];
 
-    int err_code = 0;
-
 	int dev_id = hci_get_route(NULL);
+
+	int num = 0;
 
     if (dev_id < 0) {
         perror("Could not find hci device");
-        err_code = ERR_COULD_NOT_FIND_HCI_DEV;
-    } else {
+        num = ERR_COULD_NOT_FIND_HCI_DEV;
+    }
 
-    int num = scan_ipsp_device(dev_id, timeout, addresses, names);
+    if (num == 0) {
+        num = scan_ipsp_device(dev_id, timeout, addresses, names);
+    }
 
     if (num >= 0) {
 
@@ -363,9 +363,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_spoohapps_jble6lowpand_NativeBle6LowpanI
 
     } else {
 
-        jclass exception = env->FindClass("com/spoohapps/jble6lowpand/NativeBle6LowpanIpspException");
-        jmethodID constructor = (*env)->GetMethodID(env, cls, "<init>", "(I)V");
-        env->Throw(exception);
+        jclass exception = (*env)->FindClass(env, "com/spoohapps/jble6lowpand/NativeBle6LowpanIpspException");
+        jmethodID constructor = (*env)->GetMethodID(env, exception, "<init>", "(I)V");
+        (*env)->Throw(env, exception);
 
     }
     return ret;
