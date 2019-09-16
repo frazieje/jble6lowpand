@@ -6,11 +6,10 @@ import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.DeviceService;
 import com.spoohapps.jble6lowpand.model.DeviceServiceStatus;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
-import org.glassfish.grizzly.utils.ArraySet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
