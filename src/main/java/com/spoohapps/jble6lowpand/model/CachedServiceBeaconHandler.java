@@ -1,9 +1,11 @@
 package com.spoohapps.jble6lowpand.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spoohapps.farcommon.cache.Cache;
 import com.spoohapps.farcommon.cache.CacheProvider;
 import com.spoohapps.farcommon.model.DeviceListing;
 import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.ServiceBeaconMessage;
 
 import java.io.IOException;
 import java.util.Set;
@@ -20,6 +22,8 @@ public class CachedServiceBeaconHandler implements ServiceBeaconHandler {
     private final String knownDevicesKey = "knownDevices";
 
     private final int expiresInSeconds = 10;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public CachedServiceBeaconHandler(CacheProvider cacheProvider, ServiceBeacon serviceBeacon) {
 
@@ -52,7 +56,7 @@ public class CachedServiceBeaconHandler implements ServiceBeaconHandler {
     @Override
     public void broadcastServices() {
 
-        Cache<String> cache = cacheProvider.acquire(String.class);
+        Cache<ServiceBeaconMessage> cache = cacheProvider.acquire(ServiceBeaconMessage.class);
 
         if (cache == null) {
             return;
@@ -60,9 +64,9 @@ public class CachedServiceBeaconHandler implements ServiceBeaconHandler {
 
         try {
 
-            String beacon = cache.get("far_serviceBeacon").get(1, TimeUnit.SECONDS);
+            ServiceBeaconMessage message = cache.get(ServiceBeaconMessage.class.getSimpleName()).get(1, TimeUnit.SECONDS);
 
-            serviceBeacon.broadcast(beacon);
+            serviceBeacon.broadcast(objectMapper.writeValueAsString(message));
 
         } catch (InterruptedException | TimeoutException | ExecutionException | IOException e) {
             throw new RuntimeException(e);

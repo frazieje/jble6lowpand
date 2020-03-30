@@ -124,6 +124,8 @@ public class ScanningDaemon implements Controller {
         logger.info("Controller Port: {}", config.getControllerPort());
         logger.info("Allocator Type: {}", config.getAllocatorType());
         logger.info("Whitelist path: {}", config.getWhitelistPath());
+        logger.info("Service Beacon Address: {}", config.getServiceBeaconMulticastAddress());
+        logger.info("Service Beacon Port: {}", config.getServiceBeaconMulticastPort());
 
         if (workerManagers == null) {
             workerManagers = new ArrayList<>();
@@ -300,7 +302,7 @@ public class ScanningDaemon implements Controller {
                                 serviceBeaconHandlers
                                         .add(new CachedServiceBeaconHandler(cacheProvider, serviceBeacon));
 
-                                logger.info("Redis Device Listing Consumer loaded");
+                                logger.info("Redis SearviceBeaconHandler loaded");
                             } else {
                                 logger.info("Cache provider is not a redis cache provider. Check configuration.");
                             }
