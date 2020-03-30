@@ -1,4 +1,4 @@
-FROM gradle:4.10.3-jdk8 as javabuilder
+FROM arm32v7/gradle:jdk8 as javabuilder
 
 COPY --chown=gradle:gradle . /home/gradle/src
 
