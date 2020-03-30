@@ -50,7 +50,7 @@ public class DefaultConfig implements DaemonConfig {
     }
 
     @Override
-    public List<String> getDeviceListingConsumers() {
+    public List<String> getServiceBeaconHandlers() {
         return new ArrayList<>();
     }
 
@@ -67,5 +67,15 @@ public class DefaultConfig implements DaemonConfig {
     @Override
     public int getRedisPort() {
         return 0;
+    }
+
+    @Override
+    public String getServiceBeaconMulticastAddress() {
+        return "224.0.0.147";
+    }
+
+    @Override
+    public int getServiceBeaconMulticastPort() {
+        return 9889;
     }
 }

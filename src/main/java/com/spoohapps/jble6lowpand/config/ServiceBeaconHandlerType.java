@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.config;
 
-public enum DeviceListingConsumerType {
+public enum ServiceBeaconHandlerType {
 
     http,
 

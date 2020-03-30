@@ -26,8 +26,8 @@ public interface DaemonConfig {
     @ConfigFlags({"allocatorType", "a"})
     String getAllocatorType();
 
-    @ConfigFlags({"deviceListingConsumers", "k"})
-    List<String> getDeviceListingConsumers();
+    @ConfigFlags({"serviceBeaconHandlers", "k"})
+    List<String> getServiceBeaconHandlers();
 
     @ConfigFlags({"whitelistPath", "w"})
     String getWhitelistPath();
@@ -37,4 +37,12 @@ public interface DaemonConfig {
 
     @ConfigFlags({"redisPort", "u"})
     int getRedisPort();
+
+    @ConfigFlags("serviceBeaconMulticastAddress")
+    String getServiceBeaconMulticastAddress();
+
+    @ConfigFlags("serviceBeaconMulticastPort")
+    int getServiceBeaconMulticastPort();
+
+
 }

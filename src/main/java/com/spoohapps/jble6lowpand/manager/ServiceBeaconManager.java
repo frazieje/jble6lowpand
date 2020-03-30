@@ -3,7 +3,7 @@ package com.spoohapps.jble6lowpand.manager;
 import com.spoohapps.farcommon.manager.AbstractManager;
 import com.spoohapps.farcommon.manager.ManagerSettings;
 import com.spoohapps.farcommon.model.EUI48Address;
-import com.spoohapps.jble6lowpand.model.DeviceListingConsumer;
+import com.spoohapps.jble6lowpand.model.ServiceBeaconHandler;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,35 +12,40 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class KnownDevicesManager extends AbstractManager<Set<EUI48Address>> {
+public class ServiceBeaconManager extends AbstractManager<Set<EUI48Address>> {
 
-    private static final Logger logger = LoggerFactory.getLogger(KnownDevicesManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceBeaconManager.class);
 
-    private final List<DeviceListingConsumer> deviceListingConsumers;
+    private final List<ServiceBeaconHandler> serviceBeaconHandlers;
     private final KnownDeviceRepository knownDevices;
 
-    public KnownDevicesManager(
+    public ServiceBeaconManager(
             ScheduledExecutorService executorService,
             ManagerSettings managerSettings,
-            List<DeviceListingConsumer> deviceListingConsumers,
+            List<ServiceBeaconHandler> serviceBeaconHandlers,
             KnownDeviceRepository knownDevices) {
 
         super(executorService, managerSettings);
 
-        this.deviceListingConsumers = deviceListingConsumers;
+        this.serviceBeaconHandlers = serviceBeaconHandlers;
         this.knownDevices = knownDevices;
 
     }
 
     @Override
     protected void doProcess() {
-        logger.trace("publishing known devices");
-        for (DeviceListingConsumer consumer : deviceListingConsumers) {
-            logger.trace("publishing to consumer");
+        logger.trace("publishing service details");
+        for (ServiceBeaconHandler consumer : serviceBeaconHandlers) {
+            logger.trace("publishing known devices to consumer");
             try {
-                consumer.accept(knownDevices.getAll());
+                consumer.broadcastDeviceList(knownDevices.getAll());
             } catch (Exception e) {
                 logger.error("error publishing to consumer", e);
+            }
+            try {
+                consumer.broadcastServices();
+            } catch (Exception e) {
+                logger.error("error broadcasting services", e);
             }
         }
 

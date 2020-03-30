@@ -4,7 +4,7 @@ import com.spoohapps.farcommon.manager.Manager;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
-import com.spoohapps.jble6lowpand.model.DeviceListingConsumer;
+import com.spoohapps.jble6lowpand.model.ServiceBeaconHandler;
 import com.spoohapps.jble6lowpand.model.InMemoryKnownDeviceRepository;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.junit.jupiter.api.*;
@@ -27,7 +27,7 @@ public class ScanningDaemonTests {
     private FakeDeviceService ipspService;
     private ControllerBroadcaster controllerService;
 
-    private List<DeviceListingConsumer> deviceListingConsumerList = new ArrayList<>();
+    private List<ServiceBeaconHandler> serviceBeaconHandlerList = new ArrayList<>();
 
     @Mock
     Manager<Set<EUI48Address>> knownDevicesManagerMock;
@@ -45,7 +45,7 @@ public class ScanningDaemonTests {
                 knownDevices,
                 ipspService,
                 new TestDaemonConfig(),
-                deviceListingConsumerList,
+                serviceBeaconHandlerList,
                 controllerService,
                 mock(RedisCacheProvider.class),
                 null,
@@ -106,7 +106,7 @@ public class ScanningDaemonTests {
     @Test
     public void shouldInitializeDeviceListingConsumers() {
         sleep(500);
-        assertTrue(deviceListingConsumerList.size() > 0);
+        assertTrue(serviceBeaconHandlerList.size() > 0);
     }
 
     class TestDaemonConfig implements DaemonConfig {
@@ -147,7 +147,7 @@ public class ScanningDaemonTests {
         }
 
         @Override
-        public List<String> getDeviceListingConsumers() {
+        public List<String> getServiceBeaconHandlers() {
             return Collections.singletonList("redis");
         }
 
@@ -164,6 +164,16 @@ public class ScanningDaemonTests {
         @Override
         public int getRedisPort() {
             return 100;
+        }
+
+        @Override
+        public String getServiceBeaconMulticastAddress() {
+            return null;
+        }
+
+        @Override
+        public int getServiceBeaconMulticastPort() {
+            return 0;
         }
     }
 

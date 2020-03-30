@@ -12,13 +12,13 @@ import com.spoohapps.farcommon.manager.RedisCacheConnectionManager;
 import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.config.DefaultConfig;
-import com.spoohapps.jble6lowpand.config.DeviceListingConsumerType;
+import com.spoohapps.jble6lowpand.config.ServiceBeaconHandlerType;
 import com.spoohapps.jble6lowpand.config.DeviceServiceType;
 import com.spoohapps.jble6lowpand.controller.Controller;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
 import com.spoohapps.jble6lowpand.controller.HttpControllerBroadcaster;
 import com.spoohapps.jble6lowpand.manager.DeviceServiceManager;
-import com.spoohapps.jble6lowpand.manager.KnownDevicesManager;
+import com.spoohapps.jble6lowpand.manager.ServiceBeaconManager;
 import com.spoohapps.jble6lowpand.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class ScanningDaemon implements Controller {
 
     private final Logger logger = LoggerFactory.getLogger(ScanningDaemon.class);
 
-    private List<DeviceListingConsumer> deviceListingConsumers;
+    private List<ServiceBeaconHandler> serviceBeaconHandlers;
 
     private CacheProvider cacheProvider;
 
@@ -64,7 +64,7 @@ public class ScanningDaemon implements Controller {
             KnownDeviceRepository knownDeviceRepository,
             DeviceService deviceService,
             DaemonConfig config,
-            List<DeviceListingConsumer> deviceListingConsumers,
+            List<ServiceBeaconHandler> serviceBeaconHandlers,
             ControllerBroadcaster controllerService,
             CacheProvider cacheProvider,
             Manager<DeviceServiceStatus> deviceServiceManager,
@@ -73,7 +73,7 @@ public class ScanningDaemon implements Controller {
         this.deviceService = deviceService;
         this.config = config;
         this.controllerService = controllerService;
-        this.deviceListingConsumers = deviceListingConsumers;
+        this.serviceBeaconHandlers = serviceBeaconHandlers;
         this.deviceServiceManager = deviceServiceManager;
         this.knownDevicesManager = knownDevicesManager;
         this.cacheProvider = cacheProvider;
@@ -141,9 +141,9 @@ public class ScanningDaemon implements Controller {
 
         }
 
-        if (deviceListingConsumers == null) {
+        if (serviceBeaconHandlers == null) {
 
-            deviceListingConsumers = new ArrayList<>();
+            serviceBeaconHandlers = new ArrayList<>();
 
         }
 
@@ -232,20 +232,20 @@ public class ScanningDaemon implements Controller {
             };
 
             knownDevicesManager =
-                    new KnownDevicesManager(
+                    new ServiceBeaconManager(
                             workerExecutorService,
                             knownDevicesSettings,
-                            deviceListingConsumers,
+                            serviceBeaconHandlers,
                             knownDevices);
 
         }
 
         try {
 
-            config.getDeviceListingConsumers().stream()
-                    .map(DeviceListingConsumerType::valueOf)
+            config.getServiceBeaconHandlers().stream()
+                    .map(ServiceBeaconHandlerType::valueOf)
                     .forEach(t -> {
-                        if (t == DeviceListingConsumerType.redis) {
+                        if (t == ServiceBeaconHandlerType.redis) {
 
                             if (cacheProvider == null) {
 
@@ -291,8 +291,14 @@ public class ScanningDaemon implements Controller {
                             }
 
                             if (cacheProvider instanceof RedisCacheProvider) {
-                                deviceListingConsumers
-                                        .add(new CachedDeviceListingConsumer(cacheProvider));
+
+                                ServiceBeacon serviceBeacon =
+                                        new MulticastServiceBeacon(
+                                                config.getServiceBeaconMulticastAddress(),
+                                                config.getServiceBeaconMulticastPort());
+
+                                serviceBeaconHandlers
+                                        .add(new CachedServiceBeaconHandler(cacheProvider, serviceBeacon));
 
                                 logger.info("Redis Device Listing Consumer loaded");
                             } else {
@@ -357,7 +363,7 @@ public class ScanningDaemon implements Controller {
 
                 deviceServiceManager.start();
 
-                if (deviceListingConsumers.size() > 0) {
+                if (serviceBeaconHandlers.size() > 0) {
 
                     logger.info("Starting Publisher...");
 
