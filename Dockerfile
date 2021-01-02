@@ -31,6 +31,8 @@ COPY ./jni /opt/jble6lowpand/jni
 
 WORKDIR /opt/jble6lowpand/jni
 
+RUN rm -rf libs/
+
 RUN mkdir libs
 
 RUN make
