@@ -407,7 +407,11 @@ public class ScanningDaemon implements Controller {
 
     @Override
     public Set<MACAddress> getAvailableDevices() {
-        return deviceServiceManager.getResource().getAvailableDevices();
+        if (deviceServiceManager != null) {
+            return deviceServiceManager.getResource().getAvailableDevices();
+        } else {
+            return new HashSet<>();
+        }
     }
 
     @Override
@@ -417,7 +421,11 @@ public class ScanningDaemon implements Controller {
 
     @Override
     public Set<MACAddress> getConnectedDevices() {
-        return deviceServiceManager.getResource().getConnectedDevices();
+        if (deviceServiceManager != null) {
+            return deviceServiceManager.getResource().getConnectedDevices();
+        } else {
+            return new HashSet<>();
+        }
     }
 
     @Override
