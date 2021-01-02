@@ -2,7 +2,7 @@ package com.spoohapps.jble6lowpand.manager;
 
 import com.spoohapps.farcommon.manager.AbstractManager;
 import com.spoohapps.farcommon.manager.ManagerSettings;
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import com.spoohapps.jble6lowpand.model.ServiceBeaconHandler;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
 import org.slf4j.Logger;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class ServiceBeaconManager extends AbstractManager<Set<EUI48Address>> {
+public class ServiceBeaconManager extends AbstractManager<Set<MACAddress>> {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceBeaconManager.class);
 
@@ -52,7 +52,7 @@ public class ServiceBeaconManager extends AbstractManager<Set<EUI48Address>> {
     }
 
     @Override
-    protected Set<EUI48Address> doGetResource() {
+    protected Set<MACAddress> doGetResource() {
         return knownDevices.getAll();
     }
 }

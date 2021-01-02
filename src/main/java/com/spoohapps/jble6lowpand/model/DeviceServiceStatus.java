@@ -1,26 +1,26 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 
 import java.util.Set;
 
 public class DeviceServiceStatus {
 
-    private final Set<EUI48Address> availableDevices;
-    private final Set<EUI48Address> connectedDevices;
+    private final Set<MACAddress> availableDevices;
+    private final Set<MACAddress> connectedDevices;
 
-    public DeviceServiceStatus(Set<EUI48Address> availableDevices, Set<EUI48Address> connectedDevices) {
+    public DeviceServiceStatus(Set<MACAddress> availableDevices, Set<MACAddress> connectedDevices) {
 
         this.availableDevices = availableDevices;
         this.connectedDevices = connectedDevices;
 
     }
 
-    public Set<EUI48Address> getAvailableDevices() {
+    public Set<MACAddress> getAvailableDevices() {
         return availableDevices;
     }
 
-    public Set<EUI48Address> getConnectedDevices() {
+    public Set<MACAddress> getConnectedDevices() {
         return connectedDevices;
     }
 }

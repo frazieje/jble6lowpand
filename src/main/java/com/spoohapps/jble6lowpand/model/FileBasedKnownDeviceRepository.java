@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	private final WhitelistFileWatcher watcher;
 	private final Path filePath;
 
-	private volatile Set<EUI48Address> knownDevices;
+	private volatile Set<MACAddress> knownDevices;
 
     private final Logger logger = LoggerFactory.getLogger(FileBasedKnownDeviceRepository.class);
 
@@ -42,7 +42,7 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
     }
 
     private void init() {
-        Set<EUI48Address> whitelistedAddresses = getStoredAddresses();
+        Set<MACAddress> whitelistedAddresses = getStoredAddresses();
         knownDevices.addAll(whitelistedAddresses);
     }
 
@@ -52,13 +52,13 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
     }
 
 	@Override
-	public boolean contains(EUI48Address address) {
+	public boolean contains(MACAddress address) {
 		return knownDevices.contains(address);
 	}
 
 	@Override
-	public boolean add(EUI48Address address) {
-        Set<EUI48Address> copy = getStoredAddresses();
+	public boolean add(MACAddress address) {
+        Set<MACAddress> copy = getStoredAddresses();
         if (copy.add(address)) {
             setStoredAddresses(copy);
             return true;
@@ -67,8 +67,8 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
 	@Override
-	public boolean remove(EUI48Address address) {
-        Set<EUI48Address> copy = getStoredAddresses();
+	public boolean remove(MACAddress address) {
+        Set<MACAddress> copy = getStoredAddresses();
         if (copy.remove(address)) {
             setStoredAddresses(copy);
             return true;
@@ -77,8 +77,8 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
     @Override
-    public boolean update(EUI48Address address) {
-        Set<EUI48Address> copy = getStoredAddresses();
+    public boolean update(MACAddress address) {
+        Set<MACAddress> copy = getStoredAddresses();
         if (copy.remove(address)) {
             copy.add(address);
             setStoredAddresses(copy);
@@ -93,22 +93,22 @@ public class FileBasedKnownDeviceRepository implements KnownDeviceRepository {
 	}
 
 	@Override
-    public Set<EUI48Address> getAll() {
+    public Set<MACAddress> getAll() {
         return new HashSet<>(knownDevices);
     }
 
-	private synchronized void setStoredAddresses(Set<EUI48Address> addresses) {
+	private synchronized void setStoredAddresses(Set<MACAddress> addresses) {
         try {
-            byte[] bytes = addresses.stream().map(EUI48Address::toString).collect(Collectors.joining(System.getProperty("line.separator"))).getBytes();
+            byte[] bytes = addresses.stream().map(MACAddress::toString).collect(Collectors.joining(System.getProperty("line.separator"))).getBytes();
             Files.write(filePath, bytes);
         } catch (IOException ioe) {
             logger.error("error writing whitelist file");
         }
     }
 
-	private synchronized Set<EUI48Address> getStoredAddresses() {
+	private synchronized Set<MACAddress> getStoredAddresses() {
 	    try (Stream<String> addressLines = Files.lines(filePath)) {
-            return addressLines.map(EUI48Address::new).collect(Collectors.toCollection(HashSet::new));
+            return addressLines.map(MACAddress::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             logger.error("error reading whitelist file");
         }

@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand.controller.api;
 
+import com.spoohapps.farcommon.model.MACAddress;
 import com.spoohapps.jble6lowpand.controller.Controller;
-import com.spoohapps.farcommon.model.EUI48Address;
 import com.spoohapps.jble6lowpand.model.Status;
 
 import javax.inject.Inject;
@@ -32,12 +32,12 @@ public class StatusResource {
     @PUT
     @Consumes({MediaType.APPLICATION_JSON})
     @Path("{id}")
-    public Response putKnownAddress(@PathParam("id") String id, EUI48Address address)
+    public Response putKnownAddress(@PathParam("id") String id, MACAddress address)
     {
-        EUI48Address newAddress;
+        MACAddress newAddress;
 
         try {
-            newAddress = new EUI48Address(id);
+            newAddress = new MACAddress(id);
         } catch (IllegalArgumentException e) {
             return Response.status(400, e.getMessage()).build();
         }
@@ -57,10 +57,10 @@ public class StatusResource {
     @Path("{id}")
     public Response deleteKnownAddress(@PathParam("id") String id)
     {
-        EUI48Address address;
+        MACAddress address;
 
         try {
-            address = new EUI48Address(id);
+            address = new MACAddress(id);
         } catch (IllegalArgumentException e) {
             return Response.status(400, e.getMessage()).build();
         }

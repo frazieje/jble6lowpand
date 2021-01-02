@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import org.junit.jupiter.api.*;
 
 import java.io.BufferedWriter;
@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,18 +56,18 @@ public class FileBasedKnownDeviceRepositoryTests {
         }
     }
 
-    private Set<EUI48Address> getFileContents() {
+    private Set<MACAddress> getFileContents() {
         try (Stream<String> fileLines = Files.lines(filePath)) {
-            return fileLines.map(EUI48Address::new).collect(Collectors.toCollection(HashSet::new));
+            return fileLines.map(MACAddress::new).collect(Collectors.toCollection(HashSet::new));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
         return new HashSet<>();
     }
 
-    private void writeFileContents(Set<EUI48Address> addresses) {
+    private void writeFileContents(Set<MACAddress> addresses) {
         try (BufferedWriter bw = Files.newBufferedWriter(filePath, Charset.defaultCharset())) {
-            String data = addresses.stream().map(EUI48Address::toString).collect(Collectors.joining(System.getProperty("line.separator")));
+            String data = addresses.stream().map(MACAddress::toString).collect(Collectors.joining(System.getProperty("line.separator")));
             bw.write(data);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -77,21 +76,43 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     @Test
     public void shouldSaveAddedAddressesToFile() {
-        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF");
+        MACAddress address = new MACAddress("00:AA:BB:CC:DD:FF");
+        knownDevices.add(address);
+        assertTrue(getFileContents().contains(address));
+    }
+
+    @Test
+    public void shouldSaveAddedEUI64AddressesToFile() {
+        MACAddress address = new MACAddress("00:11:22:AA:BB:CC:DD:FF");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }
 
     @Test
     public void shouldSaveAddedAddressesWithNamesToFile() {
-        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF testName");
+        MACAddress address = new MACAddress("00:AA:BB:CC:DD:FF testName");
+        knownDevices.add(address);
+        assertTrue(getFileContents().contains(address));
+    }
+
+    @Test
+    public void shouldSaveAddedEUI64AddressesWithNamesToFile() {
+        MACAddress address = new MACAddress("00:11:22:AA:BB:CC:DD:FF testName");
         knownDevices.add(address);
         assertTrue(getFileContents().contains(address));
     }
 
     @Test
     public void shouldRemoveRemovedAddressesFromFile() {
-        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF");
+        MACAddress address = new MACAddress("00:AA:BB:CC:DD:FF");
+        knownDevices.add(address);
+        knownDevices.remove(address);
+        assertFalse(getFileContents().contains(address));
+    }
+
+    @Test
+    public void shouldRemoveRemovedEUI64AddressesFromFile() {
+        MACAddress address = new MACAddress("00:11:22:AA:BB:CC:DD:FF");
         knownDevices.add(address);
         knownDevices.remove(address);
         assertFalse(getFileContents().contains(address));
@@ -99,29 +120,47 @@ public class FileBasedKnownDeviceRepositoryTests {
 
     @Test
     public void shouldNotAddExistingDevice() {
-        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF TEST");
+        MACAddress address = new MACAddress("00:AA:BB:CC:DD:FF TEST");
         knownDevices.add(address);
-        EUI48Address address2 = new EUI48Address("00:AA:BB:CC:DD:FF testName");
+        MACAddress address2 = new MACAddress("00:AA:BB:CC:DD:FF testName");
+        knownDevices.add(address2);
+        assertFalse(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
+    }
+
+    @Test
+    public void shouldNotAddExistingEUI64Device() {
+        MACAddress address = new MACAddress("00:11:22:AA:BB:CC:DD:FF TEST");
+        knownDevices.add(address);
+        MACAddress address2 = new MACAddress("00:11:22:AA:BB:CC:DD:FF testName");
         knownDevices.add(address2);
         assertFalse(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
     }
 
     @Test
     public void shouldUpdateExistingDevice() {
-        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF TEST");
+        MACAddress address = new MACAddress("00:AA:BB:CC:DD:FF TEST");
         knownDevices.add(address);
-        EUI48Address address2 = new EUI48Address("00:AA:BB:CC:DD:FF testName");
+        MACAddress address2 = new MACAddress("00:AA:BB:CC:DD:FF testName");
         knownDevices.update(address2);
         assertEquals(1, getFileContents().size());
         assertTrue(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
     }
 
+    @Test
+    public void shouldUpdateExistingEUI64Device() {
+        MACAddress address = new MACAddress("00:11:22:AA:BB:CC:DD:FF TEST");
+        knownDevices.add(address);
+        MACAddress address2 = new MACAddress("00:11:22:AA:BB:CC:DD:FF testName");
+        knownDevices.update(address2);
+        assertEquals(1, getFileContents().size());
+        assertTrue(getFileContents().stream().anyMatch(x -> x.getName().equals("testName")));
+    }
 
     @Test
     public void shouldWatchForFileChanges() {
         sleep(1000);
-        EUI48Address address = new EUI48Address("00:AA:BB:CC:DD:FF");
-        Set<EUI48Address> addAddresses = new HashSet<>();
+        MACAddress address = new MACAddress("00:AA:BB:CC:DD:FF");
+        Set<MACAddress> addAddresses = new HashSet<>();
         addAddresses.add(address);
         writeFileContents(addAddresses);
         sleep(10000);

@@ -1,7 +1,7 @@
 package com.spoohapps.jble6lowpand;
 import com.spoohapps.farcommon.cache.RedisCacheProvider;
 import com.spoohapps.farcommon.manager.Manager;
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.controller.ControllerBroadcaster;
 import com.spoohapps.jble6lowpand.model.ServiceBeaconHandler;
@@ -30,7 +30,7 @@ public class ScanningDaemonTests {
     private List<ServiceBeaconHandler> serviceBeaconHandlerList = new ArrayList<>();
 
     @Mock
-    Manager<Set<EUI48Address>> knownDevicesManagerMock;
+    Manager<Set<MACAddress>> knownDevicesManagerMock;
 
     @BeforeAll
     public void context() {
@@ -82,7 +82,7 @@ public class ScanningDaemonTests {
 
     @Test
     public void shouldConnectToKnownDevice() {
-        EUI48Address knownAddress = new EUI48Address("35:80:41:4B:D0:E2");
+        MACAddress knownAddress = new MACAddress("35:80:41:4B:D0:E2");
         knownDevices.add(knownAddress);
         ipspService.addSeedAddress(knownAddress);
         sleep(500);
@@ -91,7 +91,7 @@ public class ScanningDaemonTests {
 
     @Test
     public void shouldDisconnectFromUnknownDevice() {
-        EUI48Address unknownAddress = new EUI48Address("35:80:41:4B:D0:E2");
+        MACAddress unknownAddress = new MACAddress("35:80:41:4B:D0:E2");
         ipspService.connectDevice(unknownAddress);
         sleep(500);
         assertFalse(daemon.getConnectedDevices().contains(unknownAddress));

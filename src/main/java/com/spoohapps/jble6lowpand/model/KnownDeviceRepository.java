@@ -1,18 +1,18 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 
 import java.util.Set;
 
 public interface KnownDeviceRepository {
 
-	boolean contains(EUI48Address address);
-	boolean add(EUI48Address address);
-	boolean remove(EUI48Address address);
-	boolean update(EUI48Address address);
+	boolean contains(MACAddress address);
+	boolean add(MACAddress address);
+	boolean remove(MACAddress address);
+	boolean update(MACAddress address);
 
 	void startWatcher();
 	void stopWatcher();
 	void clear();
-	Set<EUI48Address> getAll();
+	Set<MACAddress> getAll();
 }

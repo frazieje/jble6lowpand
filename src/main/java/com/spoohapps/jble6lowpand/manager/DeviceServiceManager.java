@@ -2,7 +2,7 @@ package com.spoohapps.jble6lowpand.manager;
 
 import com.spoohapps.farcommon.manager.AbstractManager;
 import com.spoohapps.farcommon.manager.ManagerSettings;
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import com.spoohapps.jble6lowpand.DeviceService;
 import com.spoohapps.jble6lowpand.model.DeviceServiceStatus;
 import com.spoohapps.jble6lowpand.model.KnownDeviceRepository;
@@ -24,9 +24,9 @@ public class DeviceServiceManager extends AbstractManager<DeviceServiceStatus> {
 
     private final KnownDeviceRepository knownDevices;
 
-    private final CopyOnWriteArraySet<EUI48Address> availableDevices;
+    private final CopyOnWriteArraySet<MACAddress> availableDevices;
 
-    private final CopyOnWriteArraySet<EUI48Address> connectedDevices;
+    private final CopyOnWriteArraySet<MACAddress> connectedDevices;
 
     private final int scanDurationSeconds;
 
@@ -66,11 +66,11 @@ public class DeviceServiceManager extends AbstractManager<DeviceServiceStatus> {
 
         logger.trace("Starting process");
 
-        Set<EUI48Address> connectedAddresses = updateConnectedDevices();
+        Set<MACAddress> connectedAddresses = updateConnectedDevices();
 
         disconnectFromUnknownDevices(connectedAddresses);
 
-        Set<EUI48Address> availableAddresses = scanForDevices();
+        Set<MACAddress> availableAddresses = scanForDevices();
 
         connectToKnownDevices(availableAddresses, connectedAddresses);
 
@@ -80,10 +80,10 @@ public class DeviceServiceManager extends AbstractManager<DeviceServiceStatus> {
 
     }
 
-    private void connectToKnownDevices(Set<EUI48Address> availableAddresses, Set<EUI48Address> connectedAddresses) {
+    private void connectToKnownDevices(Set<MACAddress> availableAddresses, Set<MACAddress> connectedAddresses) {
         logger.trace("Connecting to known devices...");
         try {
-            for (EUI48Address address : availableAddresses) {
+            for (MACAddress address : availableAddresses) {
                 if (knownDevices.contains(address) && !connectedAddresses.contains(address)) {
                     logger.info("Connecting to {} ... ", address.toString());
                     if (deviceService.connectDevice(address)) {
@@ -100,10 +100,10 @@ public class DeviceServiceManager extends AbstractManager<DeviceServiceStatus> {
         logger.trace("Done connecting to known devices");
     }
 
-    private void disconnectFromUnknownDevices(Set<EUI48Address> connectedAddresses) {
+    private void disconnectFromUnknownDevices(Set<MACAddress> connectedAddresses) {
         logger.trace("Disconnecting from unknown devices...");
         try {
-            for (EUI48Address address : connectedAddresses) {
+            for (MACAddress address : connectedAddresses) {
                 if (!knownDevices.contains(address)) {
                     logger.info("Disconnected from {} ... ", address.toString());
                     if (deviceService.disconnectDevice(address)) {
@@ -120,13 +120,13 @@ public class DeviceServiceManager extends AbstractManager<DeviceServiceStatus> {
         logger.trace("Done disconnecting from known devices");
     }
 
-    private Set<EUI48Address> scanForDevices() {
+    private Set<MACAddress> scanForDevices() {
         logger.trace("Scanning for available devices");
-        Set<EUI48Address> availableAddresses = new HashSet<>();
+        Set<MACAddress> availableAddresses = new HashSet<>();
         try {
-            EUI48Address[] devices = deviceService.scanDevices(scanDurationSeconds);
+            MACAddress[] devices = deviceService.scanDevices(scanDurationSeconds);
             logger.trace("{} available devices found", devices.length);
-            for (EUI48Address device : devices) {
+            for (MACAddress device : devices) {
                 logger.trace("adding available device {}", device);
                 availableAddresses.add(device);
             }
@@ -139,9 +139,9 @@ public class DeviceServiceManager extends AbstractManager<DeviceServiceStatus> {
         return availableAddresses;
     }
 
-    private Set<EUI48Address> updateConnectedDevices() {
+    private Set<MACAddress> updateConnectedDevices() {
 
-        Set<EUI48Address> connectedAddresses = new HashSet<>();
+        Set<MACAddress> connectedAddresses = new HashSet<>();
 
         logger.trace("Updating connected devices");
         try {

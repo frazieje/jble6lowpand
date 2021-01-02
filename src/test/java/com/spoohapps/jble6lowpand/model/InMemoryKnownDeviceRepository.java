@@ -1,6 +1,6 @@
 package com.spoohapps.jble6lowpand.model;
 
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -9,33 +9,33 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class InMemoryKnownDeviceRepository implements KnownDeviceRepository {
 
-    private final Set<EUI48Address> knownDevices;
+    private final Set<MACAddress> knownDevices;
 
     public InMemoryKnownDeviceRepository() {
         knownDevices = new CopyOnWriteArraySet<>();
     }
 
-    public InMemoryKnownDeviceRepository(Collection<EUI48Address> seedSet) {
+    public InMemoryKnownDeviceRepository(Collection<MACAddress> seedSet) {
         knownDevices = new CopyOnWriteArraySet<>(seedSet);
     }
 
     @Override
-    public boolean contains(EUI48Address address) {
+    public boolean contains(MACAddress address) {
         return knownDevices.contains(address);
     }
 
     @Override
-    public boolean add(EUI48Address address) {
+    public boolean add(MACAddress address) {
         return knownDevices.add(address);
     }
 
     @Override
-    public boolean remove(EUI48Address address) {
+    public boolean remove(MACAddress address) {
         return knownDevices.remove(address);
     }
 
     @Override
-    public boolean update(EUI48Address address) {
+    public boolean update(MACAddress address) {
         if (knownDevices.remove(address)) {
             return knownDevices.add(address);
         }
@@ -56,7 +56,7 @@ public class InMemoryKnownDeviceRepository implements KnownDeviceRepository {
     public void clear() { knownDevices.clear(); }
 
     @Override
-    public Set<EUI48Address> getAll() {
+    public Set<MACAddress> getAll() {
         return new HashSet<>(knownDevices);
     }
 }

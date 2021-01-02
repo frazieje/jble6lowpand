@@ -9,7 +9,7 @@ import com.spoohapps.farcommon.config.ConfigBuilder;
 import com.spoohapps.farcommon.manager.Manager;
 import com.spoohapps.farcommon.manager.ManagerSettings;
 import com.spoohapps.farcommon.manager.RedisCacheConnectionManager;
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import com.spoohapps.jble6lowpand.config.DaemonConfig;
 import com.spoohapps.jble6lowpand.config.DefaultConfig;
 import com.spoohapps.jble6lowpand.config.ServiceBeaconHandlerType;
@@ -42,7 +42,7 @@ public class ScanningDaemon implements Controller {
 
     private Manager<DeviceServiceStatus> deviceServiceManager;
 
-    private Manager<Set<EUI48Address>> knownDevicesManager;
+    private Manager<Set<MACAddress>> knownDevicesManager;
 
     private ControllerBroadcaster controllerService;
 
@@ -68,7 +68,7 @@ public class ScanningDaemon implements Controller {
             ControllerBroadcaster controllerService,
             CacheProvider cacheProvider,
             Manager<DeviceServiceStatus> deviceServiceManager,
-            Manager<Set<EUI48Address>> knownDevicesManager) {
+            Manager<Set<MACAddress>> knownDevicesManager) {
         this.knownDevices = knownDeviceRepository;
         this.deviceService = deviceService;
         this.config = config;
@@ -131,11 +131,7 @@ public class ScanningDaemon implements Controller {
             workerManagers = new ArrayList<>();
         }
 
-        if (scanningExecutorService == null) {
 
-            scanningExecutorService = Executors.newSingleThreadScheduledExecutor();
-
-        }
 
         if (workerExecutorService == null) {
 
@@ -173,7 +169,7 @@ public class ScanningDaemon implements Controller {
 
         }
 
-        if (deviceServiceManager == null) {
+        if (deviceServiceManager == null && deviceService != null) {
 
             ManagerSettings deviceServiceManagerSettings = new ManagerSettings() {
                 @Override
@@ -196,6 +192,12 @@ public class ScanningDaemon implements Controller {
                     return TimeUnit.MILLISECONDS;
                 }
             };
+
+            if (scanningExecutorService == null) {
+
+                scanningExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+            }
 
             deviceServiceManager =
                     new DeviceServiceManager(
@@ -319,13 +321,21 @@ public class ScanningDaemon implements Controller {
 	public void stop() {
         logger.info("Stopping...");
 
-        stopExecutor(scanningExecutorService, "scanning");
+        if (scanningExecutorService != null) {
+            stopExecutor(scanningExecutorService, "scanning");
+        }
 
-        stopExecutor(workerExecutorService, "worker");
+        if (workerExecutorService != null) {
+            stopExecutor(workerExecutorService, "worker");
+        }
 
-        deviceServiceManager.stop();
+        if (deviceServiceManager != null) {
+            deviceServiceManager.stop();
+        }
 
-        knownDevicesManager.stop();
+        if (knownDevicesManager != null) {
+            knownDevicesManager.stop();
+        }
 
         knownDevices.stopWatcher();
 
@@ -353,35 +363,39 @@ public class ScanningDaemon implements Controller {
     public void start() {
         try {
             logger.info("Starting...");
+            logger.info("Starting Controller Service...");
             controllerService.start();
 
+            logger.info("Starting Known Devices Manager...");
             knownDevices.startWatcher();
 
             if (deviceService != null) {
 
                 deviceService.initializeDevice();
 
-                logger.info("Starting Scanner...");
+                logger.info("Starting Device Allocator...");
 
                 deviceServiceManager.start();
 
-                if (serviceBeaconHandlers.size() > 0) {
+            } else {
+                logger.info("No Device Allocator configured.");
+            }
 
-                    logger.info("Starting Publisher...");
+            if (serviceBeaconHandlers.size() > 0) {
 
-                    workerManagers.forEach(Manager::start);
+                logger.info("Starting Publisher...");
 
-                } else {
-                    logger.info("No Publisher Consumers Configured. Ignoring.");
-                }
+                workerManagers.forEach(Manager::start);
 
                 knownDevicesManager.start();
 
+            } else {
+                logger.info("No Publisher Consumers Configured.");
             }
 
             Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 
-            logger.info("Running...");
+            logger.info("Running.");
 
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -392,22 +406,22 @@ public class ScanningDaemon implements Controller {
     }
 
     @Override
-    public Set<EUI48Address> getAvailableDevices() {
+    public Set<MACAddress> getAvailableDevices() {
         return deviceServiceManager.getResource().getAvailableDevices();
     }
 
     @Override
-    public Set<EUI48Address> getKnownDevices() {
+    public Set<MACAddress> getKnownDevices() {
         return knownDevicesManager.getResource();
     }
 
     @Override
-    public Set<EUI48Address> getConnectedDevices() {
+    public Set<MACAddress> getConnectedDevices() {
         return deviceServiceManager.getResource().getConnectedDevices();
     }
 
     @Override
-    public boolean addKnownDevice(EUI48Address address) {
+    public boolean addKnownDevice(MACAddress address) {
         try {
             return knownDevices.add(address);
         } catch (IllegalArgumentException iae) {
@@ -417,7 +431,7 @@ public class ScanningDaemon implements Controller {
     }
 
     @Override
-    public boolean removeKnownDevice(EUI48Address address) {
+    public boolean removeKnownDevice(MACAddress address) {
         try {
             return knownDevices.remove(address);
         } catch (IllegalArgumentException iae) {
@@ -427,7 +441,7 @@ public class ScanningDaemon implements Controller {
     }
 
     @Override
-    public boolean updateKnownDevice(EUI48Address address) {
+    public boolean updateKnownDevice(MACAddress address) {
         try {
             return knownDevices.update(address);
         } catch (IllegalArgumentException iae) {

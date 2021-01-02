@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spoohapps.farcommon.cache.Cache;
 import com.spoohapps.farcommon.cache.CacheProvider;
 import com.spoohapps.farcommon.model.DeviceListing;
-import com.spoohapps.farcommon.model.EUI48Address;
+import com.spoohapps.farcommon.model.MACAddress;
 import com.spoohapps.farcommon.model.ServiceBeaconMessage;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class CachedServiceBeaconHandler implements ServiceBeaconHandler {
     }
 
     @Override
-    public void broadcastDeviceList(Set<EUI48Address> deviceList) {
+    public void broadcastDeviceList(Set<MACAddress> deviceList) {
 
         Cache<DeviceListing> cache = cacheProvider.acquire(DeviceListing.class);
 
